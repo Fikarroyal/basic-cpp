@@ -38,14 +38,14 @@ void tampilkanDaftarProduk(const std::vector<Produk>& daftarProduk) {
               << std::left << std::setw(25) << "Nama Produk"
               << std::right << std::setw(10) << "Harga"
               << std::right << std::setw(8) << "Stok" << std::endl;
-    std::cout << "-----------------------------------" << std::endl;
+    std::cout << "-------------------------------------------------" << std::endl;
     for (size_t i = 0; i < daftarProduk.size(); ++i) {
         std::cout << std::left << std::setw(5) << i + 1 << "."
                   << std::left << std::setw(25) << daftarProduk[i].nama
                   << std::right << std::setw(10) << std::fixed << std::setprecision(2) << daftarProduk[i].harga
                   << std::right << std::setw(8) << daftarProduk[i].stok << std::endl;
     }
-    std::cout << "===================================" << std::endl;
+    std::cout << "=================================================" << std::endl;
 }
 
 // Fungsi untuk proses pembelian produk
@@ -132,22 +132,22 @@ void tampilkanNota(const std::vector<ItemPembelian>& keranjang) {
     double totalBayar = 0.0;
 
     std::cout << "\n\n";
-    std::cout << "==================================================" << std::endl;
+    std::cout << "====================================================" << std::endl;
     std::cout << "               TOKO SEMBAKO SERBAGUNA            " << std::endl;
     std::cout << "         Jl. Super No. 123, Kota Yogyakarta          " << std::endl;
     std::cout << "              Telp: 0822-1267-9800                  " << std::endl;
-    std::cout << "==================================================" << std::endl;
+    std::cout << "====================================================" << std::endl;
     std::cout << "Tanggal & Waktu : " << getCurrentDateTime() << std::endl;
     std::cout << "Nomor Transaksi : TRN-" << std::setw(6) << std::setfill('0') << (rand() % 900000 + 100000) << std::endl; // Nomor transaksi random
     std::cout << std::setfill(' ') << std::endl; // Reset fill character
 
-    std::cout << "--------------------------------------------------" << std::endl;
+    std::cout << "----------------------------------------------------" << std::endl;
     std::cout << std::left << std::setw(4) << "No."
               << std::left << std::setw(20) << "Nama Produk"
               << std::right << std::setw(7) << "Qty"
               << std::right << std::setw(10) << "Harga"
               << std::right << std::setw(10) << "Subtotal" << std::endl;
-    std::cout << "--------------------------------------------------" << std::endl;
+    std::cout << "----------------------------------------------------" << std::endl;
 
     for (size_t i = 0; i < keranjang.size(); ++i) {
         double subtotal = keranjang[i].produk.harga * keranjang[i].jumlah;
@@ -162,17 +162,17 @@ void tampilkanNota(const std::vector<ItemPembelian>& keranjang) {
     ppn = totalHarga * 0.11; // Contoh PPN 11%
     totalBayar = totalHarga + ppn;
 
-    std::cout << "--------------------------------------------------" << std::endl;
+    std::cout << "----------------------------------------------------" << std::endl;
     std::cout << std::left << std::setw(37) << "Total Belanja"
               << std::right << std::setw(15) << std::fixed << std::setprecision(2) << totalHarga << std::endl;
     std::cout << std::left << std::setw(37) << "PPN (11%)"
               << std::right << std::setw(15) << std::fixed << std::setprecision(2) << ppn << std::endl;
-    std::cout << "--------------------------------------------------" << std::endl;
+    std::cout << "----------------------------------------------------" << std::endl;
     std::cout << std::left << std::setw(37) << "TOTAL YANG HARUS DIBAYAR"
               << std::right << std::setw(15) << std::fixed << std::setprecision(2) << totalBayar << std::endl;
-    std::cout << "==================================================" << std::endl;
-    std::cout << "             TERIMA KASIH ATAS KUNJUNGAN ANDA     " << std::endl;
-    std::cout << "==================================================" << std::endl;
+    std::cout << "====================================================" << std::endl;
+    std::cout << "           TERIMA KASIH ATAS KUNJUNGAN ANDA     " << std::endl;
+    std::cout << "====================================================" << std::endl;
 }
 
 

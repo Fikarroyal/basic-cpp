@@ -1,34 +1,27 @@
-#include <iostream>   // Input/Output
-#include <vector>     // std::vector untuk menyimpan entri
-#include <string>     // std::string, std::getline
-#include <fstream>    // File I/O (ofstream, ifstream)
-#include <sstream>    // stringstream untuk parsing data
-#include <chrono>     // Untuk mendapatkan waktu/tanggal
-#include <iomanip>    // Untuk put_time, setw
-#include <algorithm>  // Untuk std::transform, std::tolower
-
-// --- Struktur Data ---
+#include <iostream>   
+#include <vector>     
+#include <string>     
+#include <fstream>    
+#include <sstream>    
+#include <chrono>     
+#include <iomanip>    
+#include <algorithm>
 
 struct JournalEntry {
-    int id;               // ID unik untuk setiap entri
-    std::string title;    // Judul entri
-    std::string content;  // Isi/konten entri
-    std::string date;     // Tanggal pembuatan entri (YYYY-MM-DD)
+    int id;               
+    std::string title;    
+    std::string content;  
+    std::string date;     
 };
 
-// --- Global Variables ---
-std::vector<JournalEntry> journalEntries; // Vektor untuk menyimpan semua entri jurnal
-int nextEntryId = 1;                     // Counter untuk ID entri baru yang unik
-const std::string DATA_FILE = "knowledge_journal.txt"; // Nama file data
+std::vector<JournalEntry> journalEntries;
+int nextEntryId = 1;                    
+const std::string DATA_FILE = "knowledge_journal.txt";
 
-// --- Fungsi Pembantu ---
-
-// Membersihkan buffer input
 void clearInputBuffer() {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-// Mendapatkan input integer yang valid
 int getValidIntegerInput(const std::string& prompt, int minVal = 0, int maxVal = std::numeric_limits<int>::max()) {
     int value;
     while (true) {
@@ -45,7 +38,6 @@ int getValidIntegerInput(const std::string& prompt, int minVal = 0, int maxVal =
     }
 }
 
-// Mendapatkan input string yang tidak kosong
 std::string getNonEmptyStringInput(const std::string& prompt) {
     std::string input;
     while (true) {

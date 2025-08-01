@@ -1,10 +1,9 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <iomanip> // Untuk setprecision, fixed
-#include <limits>  // Untuk numeric_limits
+#include <iomanip>
+#include <limits>
 
-// --- Struktur Data Penerbangan ---
 struct Penerbangan {
     std::string kodePenerbangan;
     std::string asal;
@@ -15,7 +14,6 @@ struct Penerbangan {
     int kursiTersedia;
 };
 
-// --- Fungsi untuk Menampilkan Jadwal Penerbangan ---
 void tampilkanJadwalPenerbangan(const std::vector<Penerbangan>& daftar) {
     std::cout << "\n========================================================" << std::endl;
     std::cout << "             JADWAL PENERBANGAN TERSEDIA                " << std::endl;
@@ -31,7 +29,6 @@ void tampilkanJadwalPenerbangan(const std::vector<Penerbangan>& daftar) {
     }
 }
 
-// --- Fungsi untuk Mencetak Tiket (Simulasi) ---
 void cetakTiket(const Penerbangan& infoPenerbangan, int jumlahTiket, double totalHarga, const std::string& namaPenumpang) {
     std::cout << "\n\n********************************************************" << std::endl;
     std::cout << "* ✈️ E-TIKET PESAWAT ANDA ✈️             *" << std::endl;
@@ -50,9 +47,7 @@ void cetakTiket(const Penerbangan& infoPenerbangan, int jumlahTiket, double tota
     std::cout << "********************************************************\n" << std::endl;
 }
 
-// --- Fungsi Utama Program ---
 int main() {
-    // Inisialisasi daftar penerbangan (contoh 15 penerbangan)
     std::vector<Penerbangan> daftarPenerbangan = {
         {"GA101", "Jakarta", "Denpasar", "15/07/2025", "07:00 WIB", 1200000.00, 50},
         {"SJ205", "Surabaya", "Jakarta", "16/07/2025", "09:30 WIB", 950000.00, 75},
@@ -71,13 +66,11 @@ int main() {
         {"JT123", "Ambon", "Makassar", "19/07/2025", "11:45 WIT", 1700000.00, 38}
     };
 
-    // --- Sambutan Awal ---
     std::cout << "*****************************************************" << std::endl;
     std::cout << "* SELAMAT DATANG DI LAYANAN PEMESANAN TIKET PESAWAT!*" << std::endl;
     std::cout << "* Terbang nyaman ke destinasi impian Anda!          *" << std::endl;
     std::cout << "*****************************************************" << std::endl;
 
-    // Tampilkan jadwal penerbangan
     tampilkanJadwalPenerbangan(daftarPenerbangan);
 
     int pilihanPenerbangan;
@@ -85,26 +78,22 @@ int main() {
     std::string namaPenumpang;
     char konfirmasi;
 
-    // --- Input Pilihan Penerbangan ---
     do {
         std::cout << "\nMasukkan nomor penerbangan yang ingin Anda pesan (1-" << daftarPenerbangan.size() << "): ";
         std::cin >> pilihanPenerbangan;
 
-        // Validasi input
         if (std::cin.fail() || pilihanPenerbangan < 1 || pilihanPenerbangan > daftarPenerbangan.size()) {
             std::cout << "Pilihan tidak valid. Mohon masukkan nomor yang benar." << std::endl;
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         } else if (daftarPenerbangan[pilihanPenerbangan - 1].kursiTersedia == 0) {
             std::cout << "Maaf, penerbangan ini sudah penuh. Silakan pilih penerbangan lain." << std::endl;
-            pilihanPenerbangan = 0; // Set ke nilai tidak valid agar loop berulang
+            pilihanPenerbangan = 0;
         }
     } while (pilihanPenerbangan < 1 || pilihanPenerbangan > daftarPenerbangan.size() || daftarPenerbangan[pilihanPenerbangan - 1].kursiTersedia == 0);
 
-    // Dapatkan detail penerbangan yang dipilih
-    Penerbangan& penerbanganTerpilih = daftarPenerbangan[pilihanPenerbangan - 1]; // Gunakan referensi untuk update kursi
+    Penerbangan& penerbanganTerpilih = daftarPenerbangan[pilihanPenerbangan - 1];
 
-    // --- Input Jumlah Tiket ---
     do {
         std::cout << "Masukkan jumlah tiket yang ingin dipesan (Tersedia: " << penerbanganTerpilih.kursiTersedia << "): ";
         std::cin >> jumlahTiket;
@@ -116,16 +105,12 @@ int main() {
         }
     } while (jumlahTiket <= 0 || jumlahTiket > penerbanganTerpilih.kursiTersedia);
 
-    // Membersihkan buffer sebelum input string
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-    // --- Input Nama Penumpang ---
     std::cout << "Masukkan Nama Lengkap Penumpang: ";
     std::getline(std::cin, namaPenumpang);
 
     double totalHarga = penerbanganTerpilih.hargaTiket * jumlahTiket;
 
-    // --- Konfirmasi Pemesanan ---
     std::cout << "\n==========================================" << std::endl;
     std::cout << "       DETAIL PEMESANAN TIKET               " << std::endl;
     std::cout << "==========================================" << std::endl;
@@ -144,7 +129,6 @@ int main() {
     std::cin >> konfirmasi;
 
     if (konfirmasi == 'Y' || konfirmasi == 'y') {
-        // Kurangi kursi yang tersedia
         penerbanganTerpilih.kursiTersedia -= jumlahTiket;
 
         std::cout << "\n✅ Pemesanan tiket Anda berhasil dikonfirmasi!" << std::endl;

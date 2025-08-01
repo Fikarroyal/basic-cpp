@@ -1,15 +1,13 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <limits> // Untuk numeric_limits
+#include <limits>
 
-// Struktur untuk merepresentasikan sebuah tugas
 struct Tugas {
     std::string deskripsi;
     bool selesai;
 };
 
-// Fungsi untuk menampilkan menu utama
 void tampilkanMenu() {
     std::cout << "\n===============================" << std::endl;
     std::cout << "      APLIKASI TO-DO LIST      " << std::endl;
@@ -23,7 +21,6 @@ void tampilkanMenu() {
     std::cout << "Pilih opsi: ";
 }
 
-// Fungsi untuk menampilkan daftar tugas
 void tampilkanDaftarTugas(const std::vector<Tugas>& daftarTugas) {
     std::cout << "\n--- DAFTAR TUGAS ANDA ---" << std::endl;
     if (daftarTugas.empty()) {
@@ -38,9 +35,8 @@ void tampilkanDaftarTugas(const std::vector<Tugas>& daftarTugas) {
     std::cout << "-------------------------" << std::endl;
 }
 
-// Fungsi untuk menambahkan tugas baru
 void tambahTugas(std::vector<Tugas>& daftarTugas) {
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Bersihkan buffer input
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::string deskripsiTugas;
     std::cout << "Masukkan deskripsi tugas baru: ";
     std::getline(std::cin, deskripsiTugas);
@@ -48,19 +44,18 @@ void tambahTugas(std::vector<Tugas>& daftarTugas) {
     std::cout << "Tugas berhasil ditambahkan!" << std::endl;
 }
 
-// Fungsi untuk menandai tugas selesai
 void tandaiTugasSelesai(std::vector<Tugas>& daftarTugas) {
     tampilkanDaftarTugas(daftarTugas);
     if (daftarTugas.empty()) {
-        return; // Tidak ada tugas untuk ditandai
+        return;
     }
     int nomorTugas;
     std::cout << "Masukkan nomor tugas yang ingin ditandai selesai: ";
     std::cin >> nomorTugas;
 
     if (std::cin.fail() || nomorTugas < 1 || nomorTugas > daftarTugas.size()) {
-        std::cin.clear(); // Bersihkan flag error
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Bersihkan buffer
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cout << "Nomor tugas tidak valid. Mohon masukkan nomor yang benar." << std::endl;
     } else {
         daftarTugas[nomorTugas - 1].selesai = true;
@@ -68,19 +63,18 @@ void tandaiTugasSelesai(std::vector<Tugas>& daftarTugas) {
     }
 }
 
-// Fungsi untuk menghapus tugas
 void hapusTugas(std::vector<Tugas>& daftarTugas) {
     tampilkanDaftarTugas(daftarTugas);
     if (daftarTugas.empty()) {
-        return; // Tidak ada tugas untuk dihapus
+        return;
     }
     int nomorTugas;
     std::cout << "Masukkan nomor tugas yang ingin dihapus: ";
     std::cin >> nomorTugas;
 
     if (std::cin.fail() || nomorTugas < 1 || nomorTugas > daftarTugas.size()) {
-        std::cin.clear(); // Bersihkan flag error
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Bersihkan buffer
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cout << "Nomor tugas tidak valid. Mohon masukkan nomor yang benar." << std::endl;
     } else {
         std::string deskripsiYangDihapus = daftarTugas[nomorTugas - 1].deskripsi;
@@ -117,7 +111,6 @@ int main() {
                 std::cout << "Pilihan tidak valid. Silakan coba lagi." << std::endl;
                 break;
         }
-        // Pastikan buffer input dibersihkan jika ada karakter sisa (misalnya newline setelah angka)
         if (std::cin.peek() == '\n') {
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }

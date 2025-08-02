@@ -10,18 +10,12 @@
 #include <map>        // Untuk menggunakan std::map (struktur data key-value pair)
 #include <utility>    // Untuk std::pair, meskipun sering sudah diinclude oleh header lain, lebih baik eksplisit
 
-// --- Struktur Data ---
-
-// Struktur untuk mendefinisikan jenis sayuran yang dikelola dalam bisnis.
-// Setiap jenis sayuran memiliki ID unik, nama, dan durasi tanam hingga panen.
 struct VegetableType {
     int id;                 // ID unik untuk jenis sayuran (otomatis generated)
     std::string name;       // Nama sayuran (contoh: "Bayam", "Tomat Cherry")
     int grow_duration_days; // Perkiraan durasi tumbuh dari tanam hingga siap panen (dalam hari)
 };
 
-// Struktur untuk mencatat setiap insiden penanaman (satu 'batch' atau kelompok tanam).
-// Ini melacak spesifik penanaman sayuran di lahan.
 struct PlantingBatch {
     int id;                     // ID unik untuk batch penanaman ini
     int veggie_type_id;         // ID dari jenis sayuran yang ditanam (merujuk ke VegetableType)
@@ -31,8 +25,6 @@ struct PlantingBatch {
     bool is_harvested;          // Status panen: true jika sudah dipanen, false jika masih tumbuh.
 };
 
-// Struktur untuk mencatat setiap transaksi penjualan sayuran.
-// Ini melacak apa yang dijual, kapan, berapa banyak, dan harganya.
 struct SaleTransaction {
     int id;                 // ID unik untuk transaksi penjualan ini
     std::string veggie_name; // Nama sayuran yang terjual (untuk riwayat, bukan ID)
@@ -42,33 +34,20 @@ struct SaleTransaction {
     double total_price;      // Total harga untuk transaksi ini (quantity_sold * price_per_unit)
 };
 
-// --- Variabel Global ---
-
-// Vektor untuk menyimpan semua objek VegetableType yang terdaftar.
 std::vector<VegetableType> veggieTypes;
-// Vektor untuk menyimpan semua objek PlantingBatch yang dicatat.
 std::vector<PlantingBatch> plantingBatches;
-// Vektor untuk menyimpan semua objek SaleTransaction yang telah terjadi.
 std::vector<SaleTransaction> salesTransactions;
 
-// Penghitung ID unik untuk setiap struktur data. Akan diincrement setiap kali objek baru ditambahkan.
 int nextVeggieTypeId = 1;
 int nextPlantingBatchId = 1;
 int nextSaleTransactionId = 1;
 
-// Nama file tempat data akan disimpan dan dimuat.
 const std::string DATA_FILE = "vegetable_farm_data.txt";
 
-// --- Fungsi-fungsi Pembantu (Helper Functions) ---
-
-// Fungsi untuk membersihkan buffer input setelah membaca nilai numerik.
-// Ini penting untuk mencegah masalah saat menggunakan std::getline() setelah std::cin >> int/double.
 void clearInputBuffer() {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-// Fungsi untuk mendapatkan input integer yang valid dari pengguna.
-// Memastikan input adalah angka bulat dan berada dalam rentang minVal dan maxVal.
 int getValidIntegerInput(const std::string& prompt, int minVal = 0, int maxVal = std::numeric_limits<int>::max()) {
     int value;
     while (true) {
@@ -85,8 +64,6 @@ int getValidIntegerInput(const std::string& prompt, int minVal = 0, int maxVal =
     }
 }
 
-// Fungsi untuk mendapatkan input double (angka desimal) yang valid dari pengguna.
-// Memastikan input adalah angka desimal dan berada dalam rentang minVal dan maxVal.
 double getValidDoubleInput(const std::string& prompt, double minVal = 0.0, double maxVal = std::numeric_limits<double>::max()) {
     double value;
     while (true) {
@@ -103,14 +80,11 @@ double getValidDoubleInput(const std::string& prompt, double minVal = 0.0, doubl
     }
 }
 
-// Fungsi untuk mendapatkan input string yang tidak kosong dari pengguna.
-// Memastikan string yang dimasukkan tidak hanya spasi kosong.
 std::string getNonEmptyStringInput(const std::string& prompt) {
     std::string input;
     while (true) {
         std::cout << prompt;
         std::getline(std::cin, input);
-        // Memeriksa apakah string kosong atau hanya terdiri dari spasi
         if (input.empty() || input.find_first_not_of(' ') == std::string::npos) {
             std::cout << "Input tidak boleh kosong. Mohon masukkan teks yang valid." << std::endl;
         } else {
@@ -118,8 +92,6 @@ std::string getNonEmptyStringInput(const std::string& prompt) {
         }
     }
 }
-
-// Fungsi untuk mendapatkan tanggal saat ini dari sistem dan mengembalikannya dalam format YYYY-MM-DD.
 std::string getCurrentDate() {
     auto now = std::chrono::system_clock::now(); // Dapatkan waktu saat ini
     std::time_t currentTime = std::chrono::system_clock::to_time_t(now); // Konversi ke time_t
@@ -128,8 +100,6 @@ std::string getCurrentDate() {
     return ss.str(); // Kembalikan sebagai string
 }
 
-// Fungsi untuk menambahkan sejumlah hari ke tanggal yang diberikan.
-// Berguna untuk menghitung perkiraan tanggal panen.
 std::string addDaysToDate(const std::string& date_str, int days) {
     std::tm tm = {}; // Struktur tm untuk menyimpan komponen waktu
     std::istringstream ss(date_str); // Gunakan stringstream untuk parsing string tanggal
@@ -144,15 +114,10 @@ std::string addDaysToDate(const std::string& date_str, int days) {
     return new_ss.str(); // Kembalikan string tanggal baru
 }
 
-// Fungsi untuk mengonversi seluruh string menjadi huruf kecil (lowercase).
-// Berguna untuk perbandingan string yang tidak sensitif huruf besar/kecil.
 std::string toLower(std::string s) {
     std::transform(s.begin(), s.end(), s.begin(), ::tolower); // Menggunakan std::transform dan ::tolower
     return s;
 }
-
-// Fungsi untuk memisahkan string berdasarkan delimiter tertentu dan mengembalikan vektor string.
-// Digunakan saat memuat data dari file, di mana data dipisahkan oleh delimiter kustom "|||".
 std::vector<std::string> splitString(const std::string& s, const std::string& delimiter) {
     std::vector<std::string> tokens;
     size_t prev = 0, pos = 0;
@@ -163,24 +128,15 @@ std::vector<std::string> splitString(const std::string& s, const std::string& de
     } while (pos != std::string::npos); // Ulangi selama delimiter ditemukan
     return tokens;
 }
-
-// --- Fungsi Penyimpanan dan Pemuatan Data (Fitur 5: Penyimpanan & Pemuatan Data Otomatis) ---
-
-// Menyimpan semua data (jenis sayuran, batch penanaman, transaksi penjualan) ke dalam file teks.
-// Data disimpan dalam format yang terstruktur dengan delimiter kustom "|||".
 void saveData() {
     std::ofstream outFile(DATA_FILE); // Buka file dalam mode tulis (akan membuat/menimpa jika sudah ada)
     if (!outFile.is_open()) { // Cek apakah file berhasil dibuka
         std::cerr << "ERROR: Gagal membuka file untuk menyimpan data." << std::endl;
         return;
     }
-
-    // Simpan nilai ID unik berikutnya untuk setiap struktur, agar penomoran ID berlanjut
     outFile << nextVeggieTypeId << "\n";
     outFile << nextPlantingBatchId << "\n";
     outFile << nextSaleTransactionId << "\n";
-
-    // Simpan data VegetableTypes
     outFile << "VEGETABLE_TYPES\n"; // Header seksi
     for (const auto& vt : veggieTypes) {
         outFile << vt.id << "|||" << vt.name << "|||" << vt.grow_duration_days << "\n";
@@ -204,8 +160,6 @@ void saveData() {
     std::cout << "[INFO] Data pertanian berhasil disimpan." << std::endl;
 }
 
-// Memuat semua data dari file teks ke dalam memori program saat startup.
-// Program akan mencoba membaca data dari file; jika tidak ada, data baru akan dimulai.
 void loadData() {
     std::ifstream inFile(DATA_FILE); // Buka file dalam mode baca
     if (!inFile.is_open()) { // Jika file tidak ditemukan, informasikan dan lanjutkan dengan data kosong
@@ -214,17 +168,12 @@ void loadData() {
     }
 
     std::string line;
-    // Baca nilai ID unik berikutnya
     if (std::getline(inFile, line)) nextVeggieTypeId = std::stoi(line);
     if (std::getline(inFile, line)) nextPlantingBatchId = std::stoi(line);
     if (std::getline(inFile, line)) nextSaleTransactionId = std::stoi(line);
-
-    // Bersihkan vektor-vektor global sebelum memuat data baru
     veggieTypes.clear();
     plantingBatches.clear();
     salesTransactions.clear();
-
-    // Baca data VegetableTypes
     if (std::getline(inFile, line) && line == "VEGETABLE_TYPES") {
         while (std::getline(inFile, line) && line != "PLANTING_BATCHES") { // Baca hingga menemukan header seksi berikutnya
             std::vector<std::string> segments = splitString(line, "|||"); // Pisahkan baris berdasarkan delimiter
@@ -242,7 +191,6 @@ void loadData() {
         }
     }
 
-    // Baca data PlantingBatches (melanjutkan dari posisi terakhir di file)
     if (line == "PLANTING_BATCHES") { // Cek apakah loop di atas berhenti karena menemukan header ini
         while (std::getline(inFile, line) && line != "SALE_TRANSACTIONS") {
             std::vector<std::string> segments = splitString(line, "|||");
@@ -263,7 +211,6 @@ void loadData() {
         }
     }
 
-    // Baca data SaleTransactions (melanjutkan dari posisi terakhir di file)
     if (line == "SALE_TRANSACTIONS") { // Cek apakah loop di atas berhenti karena menemukan header ini
         while (std::getline(inFile, line)) { // Baca hingga akhir file
             std::vector<std::string> segments = splitString(line, "|||");
@@ -288,10 +235,6 @@ void loadData() {
     std::cout << "[INFO] Data pertanian berhasil dimuat." << std::endl;
 }
 
-// --- Fungsi Manajemen Jenis Sayuran (Fitur 1) ---
-
-// Menambahkan jenis sayuran baru ke sistem. Meminta nama dan durasi tumbuh.
-// Ada validasi untuk mencegah duplikasi nama sayuran.
 void addVegetableType() {
     std::cout << "\n--- Tambah Jenis Sayuran Baru ---" << std::endl;
     std::string name = getNonEmptyStringInput("Masukkan nama sayuran (contoh: Bayam, Tomat): ");
@@ -386,8 +329,6 @@ void editVegetableType() {
     saveData(); // Simpan perubahan
 }
 
-// Menghapus jenis sayuran berdasarkan ID.
-// Ada validasi untuk mencegah penghapusan jika jenis sayuran tersebut masih terkait dengan penanaman aktif.
 void deleteVegetableType() {
     viewVegetableTypes();
     if (veggieTypes.empty()) return;
@@ -403,7 +344,6 @@ void deleteVegetableType() {
         }
     }
 
-    // Gunakan erase-remove idiom untuk menghapus elemen dari vektor
     auto it = std::remove_if(veggieTypes.begin(), veggieTypes.end(),
                              [idToDelete](const VegetableType& vt) {
                                  return vt.id == idToDelete;
@@ -418,9 +358,6 @@ void deleteVegetableType() {
     }
 }
 
-// --- Fungsi Manajemen Penanaman (Fitur 2: Manajemen Lahan/Bedengan & Penanaman) ---
-
-// Mencatat penanaman baru. Pengguna memilih jenis sayuran, dan tanggal panen estimasi dihitung otomatis.
 void addPlantingBatch() {
     viewVegetableTypes(); // Tampilkan jenis sayuran yang ada
     if (veggieTypes.empty()) {
@@ -487,9 +424,6 @@ void viewPlantingBatches() {
     }
     std::cout << "==========================================================================\n" << std::endl;
 }
-
-// Memperbarui hasil panen untuk batch penanaman tertentu.
-// Memungkinkan pencatatan kuantitas hasil panen dan menandai batch sebagai 'sudah panen'.
 void updateHarvestResult() {
     viewPlantingBatches(); // Tampilkan daftar penanaman untuk memilih ID
     if (plantingBatches.empty()) return;
@@ -521,10 +455,6 @@ void updateHarvestResult() {
     saveData(); // Simpan perubahan
 }
 
-// --- Fungsi Manajemen Stok & Penjualan Panen (Fitur 3) ---
-
-// Menampilkan ringkasan stok sayuran yang sudah dipanen dan tersedia untuk dijual.
-// Menghitung stok berdasarkan hasil panen dikurangi penjualan yang sudah tercatat.
 void viewHarvestedStock() {
     std::cout << "\n==========================================================" << std::endl;
     std::cout << "                   STOK PANEN TERSEDIA                    " << std::endl;
@@ -569,8 +499,6 @@ void viewHarvestedStock() {
     std::cout << "==========================================================\n" << std::endl;
 }
 
-// Mencatat transaksi penjualan baru. Mengurangi stok yang tersedia.
-// Ada validasi untuk memastikan stok cukup sebelum penjualan dicatat.
 void recordSale() {
     viewHarvestedStock(); // Tampilkan stok yang tersedia untuk referensi
     std::cout << "\n--- Catat Penjualan Panen ---" << std::endl;
@@ -661,10 +589,6 @@ void viewSaleHistory() {
     std::cout << "==================================================================================================\n" << std::endl;
 }
 
-// --- Fungsi Laporan & Statistik (Fitur 4) ---
-
-// Menampilkan daftar penanaman yang diperkirakan akan panen di masa mendatang.
-// Diurutkan berdasarkan tanggal panen terdekat.
 void viewUpcomingHarvests() {
     std::cout << "\n==========================================================" << std::endl;
     std::cout << "                  PANEN MENDATANG                        " << std::endl;
@@ -746,13 +670,10 @@ void showBestSellingProducts() {
     std::cout << "==========================================================\n" << std::endl;
 }
 
-// Menampilkan total hasil panen untuk setiap jenis sayuran yang sudah dipanen.
 void showTotalHarvestByVegetable() {
     std::cout << "\n==========================================================" << std::endl;
     std::cout << "                 TOTAL HASIL PANEN PER JENIS SAYURAN        " << std::endl;
     std::cout << "==========================================================" << std::endl;
-
-    // Menggunakan map untuk menjumlahkan hasil panen per nama sayuran
     std::map<std::string, double> totalHarvests;
     for (const auto& pb : plantingBatches) {
         if (pb.is_harvested) {
@@ -770,15 +691,10 @@ void showTotalHarvestByVegetable() {
     if (totalHarvests.empty()) {
         std::cout << "Belum ada data hasil panen." << std::endl;
     } else {
-        // Konversi map ke vektor pair agar bisa diurutkan
         std::vector<std::pair<std::string, double>> sortedHarvests(totalHarvests.begin(), totalHarvests.end());
-
-        // Urutkan dari kuantitas panen terbanyak ke paling sedikit
         std::sort(sortedHarvests.begin(), sortedHarvests.end(), [](const std::pair<const std::string, double>& a, const std::pair<const std::string, double>& b) {
             return a.second > b.second;
         });
-
-        // Tampilkan dalam format tabel
         std::cout << std::left << std::setw(30) << "Nama Sayuran"
                   << std::left << std::setw(15) << "Total Panen (kg)" << std::endl;
         std::cout << "----------------------------------------------------------" << std::endl;
@@ -789,8 +705,6 @@ void showTotalHarvestByVegetable() {
     }
     std::cout << "==========================================================\n" << std::endl;
 }
-
-// Menampilkan total pendapatan kumulatif dari semua transaksi penjualan.
 void showTotalRevenue() {
     std::cout << "\n==========================================================" << std::endl;
     std::cout << "                    TOTAL PENDAPATAN PENJUALAN            " << std::endl;
@@ -803,16 +717,11 @@ void showTotalRevenue() {
     std::cout << "Total pendapatan dari semua penjualan: Rp " << std::fixed << std::setprecision(2) << totalRevenue << std::endl;
     std::cout << "==========================================================\n" << std::endl;
 }
-
-
-// --- Fungsi Utama (Main Program Loop) ---
-
 int main() {
-    loadData(); // Panggil fungsi untuk memuat data dari file saat program pertama kali dijalankan
+    loadData();
 
     int choice;
     do {
-        // Tampilan menu utama program
         std::cout << "\n==========================================================" << std::endl;
         std::cout << "        MANAJER PERTANIAN & DISTRIBUSI SAYURAN            " << std::endl;
         std::cout << "              Tanggal Saat Ini: " << getCurrentDate() << std::endl;
@@ -838,10 +747,7 @@ int main() {
         std::cout << "15. Keluar" << std::endl;
         std::cout << "----------------------------------------------------------" << std::endl;
 
-        // Mendapatkan pilihan pengguna
         choice = getValidIntegerInput("Pilihan Anda: ", 1, 15);
-
-        // Menjalankan fungsi sesuai pilihan pengguna
         switch (choice) {
             case 1: addVegetableType(); break;
             case 2: viewVegetableTypes(); break;
@@ -858,16 +764,14 @@ int main() {
             case 13: showTotalHarvestByVegetable(); break;
             case 14: showTotalRevenue(); break;
             case 15: 
-                saveData(); // Pastikan data disimpan sebelum program keluar
+                saveData();
                 std::cout << "\nTerima kasih telah menggunakan Manajer Pertanian & Distribusi Sayuran! Selamat bertani dan berjualan." << std::endl;
                 break;
             default: std::cout << "Pilihan tidak valid. Silakan coba lagi." << std::endl; break;
         }
-    } while (choice != 15); // Loop terus sampai pengguna memilih 15 (Keluar)
-
-    // Menunggu pengguna menekan Enter sebelum menutup konsol (berguna di beberapa IDE/lingkungan)
+    } while (choice != 15);
     std::cout << "Tekan Enter untuk keluar...";
     std::cin.get(); 
 
-    return 0; // Mengindikasikan program berakhir dengan sukses
+    return 0;
 }

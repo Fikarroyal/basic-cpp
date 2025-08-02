@@ -1,11 +1,10 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <iomanip> // Untuk setprecision, fixed, setw, left/right
-#include <limits>  // Untuk numeric_limits
-#include <algorithm> // Untuk std::find_if
+#include <iomanip>
+#include <limits>
+#include <algorithm>
 
-// --- Struktur Data Barang ---
 struct Barang {
     std::string idBarang;
     std::string nama;
@@ -13,12 +12,10 @@ struct Barang {
     double hargaSatuan;
 };
 
-// --- Fungsi untuk Membersihkan Buffer Input ---
 void clearInputBuffer() {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-// --- Fungsi untuk Validasi Input Integer ---
 int getValidIntegerInput(const std::string& prompt) {
     int value;
     while (true) {
@@ -35,7 +32,6 @@ int getValidIntegerInput(const std::string& prompt) {
     }
 }
 
-// --- Fungsi untuk Validasi Input Double ---
 double getValidDoubleInput(const std::string& prompt) {
     double value;
     while (true) {
@@ -52,10 +48,9 @@ double getValidDoubleInput(const std::string& prompt) {
     }
 }
 
-// --- Fungsi untuk Menampilkan Semua Barang ---
 void tampilkanSemuaBarang(const std::vector<Barang>& inventaris) {
     std::cout << "\n=====================================================================" << std::endl;
-    std::cout << "                        DAFTAR INVENTARIS BARANG                       " << std::endl;
+    std::cout << "                                 DAFTAR INVENTARIS BARANG                                 " << std::endl;
     std::cout << "=====================================================================\n" << std::endl;
     if (inventaris.empty()) {
         std::cout << "Inventaris kosong. Silakan tambahkan barang terlebih dahulu." << std::endl;
@@ -77,16 +72,14 @@ void tampilkanSemuaBarang(const std::vector<Barang>& inventaris) {
     std::cout << "=====================================================================\n" << std::endl;
 }
 
-// --- Fungsi Utama Program ---
 int main() {
-    std::vector<Barang> inventaris; // Vektor untuk menyimpan data barang
+    std::vector<Barang> inventaris;
     int pilihan;
     char lanjutAplikasi;
 
-    // --- Sambutan Awal ---
     std::cout << "*****************************************************" << std::endl;
-    std::cout << "*   SELAMAT DATANG DI SISTEM MANAJEMEN INVENTARIS!  *" << std::endl;
-    std::cout << "*    Kelola barang Anda dengan mudah dan efisien.   *" << std::endl;
+    std::cout << "* SELAMAT DATANG DI SISTEM MANAJEMEN INVENTARIS!    *" << std::endl;
+    std::cout << "* Kelola barang Anda dengan mudah dan efisien.    *" << std::endl;
     std::cout << "*****************************************************" << std::endl;
 
     do {
@@ -100,9 +93,8 @@ int main() {
         std::cout << "7. Keluar" << std::endl;
         std::cout << "Pilih opsi (1-7): ";
         std::cin >> pilihan;
-        clearInputBuffer(); // Bersihkan buffer setelah cin
+        clearInputBuffer();
 
-        // Validasi input menu utama
         if (std::cin.fail() || pilihan < 1 || pilihan > 7) {
             std::cout << "Pilihan tidak valid. Mohon masukkan angka 1-7." << std::endl;
             std::cin.clear();
@@ -111,13 +103,12 @@ int main() {
         }
 
         switch (pilihan) {
-            case 1: { // Tambah Barang Baru
+            case 1: {
                 Barang newItem;
                 std::cout << "\n----- Tambah Barang Baru ------" << std::endl;
                 std::cout << "Masukkan ID Barang (unik): ";
                 std::getline(std::cin, newItem.idBarang);
 
-                // Cek apakah ID sudah ada
                 bool idExists = false;
                 for (const auto& barang : inventaris) {
                     if (barang.idBarang == newItem.idBarang) {
@@ -149,11 +140,11 @@ int main() {
                 std::cout << "✅ Barang '" << newItem.nama << "' berhasil ditambahkan ke inventaris!" << std::endl;
                 break;
             }
-            case 2: { // Lihat Semua Barang
+            case 2: {
                 tampilkanSemuaBarang(inventaris);
                 break;
             }
-            case 3: { // Cari Barang
+            case 3: {
                 std::cout << "\n--- Cari Barang ---" << std::endl;
                 std::cout << "Cari berdasarkan (1: ID Barang, 2: Nama Barang): ";
                 int cariOpsi = getValidIntegerInput("");
@@ -164,7 +155,7 @@ int main() {
                     std::getline(std::cin, idCari);
 
                     auto it = std::find_if(inventaris.begin(), inventaris.end(),
-                                           [&](const Barang& b){ return b.idBarang == idCari; });
+                                             [&](const Barang& b){ return b.idBarang == idCari; });
 
                     if (it != inventaris.end()) {
                         std::cout << "\nBarang ditemukan:" << std::endl;
@@ -183,8 +174,6 @@ int main() {
                     bool found = false;
                     std::cout << "\n--- Hasil Pencarian ---" << std::endl;
                     for (const auto& barang : inventaris) {
-                        // Pencarian sebagian nama (case-insensitive, sederhana)
-                        // Perlu library tambahan untuk pencarian case-insensitive yang lebih robust
                         if (barang.nama.find(namaCari) != std::string::npos) {
                             std::cout << "  ID Barang     : " << barang.idBarang << std::endl;
                             std::cout << "  Nama Barang   : " << barang.nama << std::endl;
@@ -202,7 +191,7 @@ int main() {
                 }
                 break;
             }
-            case 4: { // Update Stok Barang
+            case 4: {
                 if (inventaris.empty()) {
                     std::cout << "\nInventaris kosong. Tidak ada barang untuk diupdate." << std::endl;
                     break;
@@ -225,7 +214,7 @@ int main() {
                 std::cout << "👍 Stok barang '" << inventaris[indexUpdate - 1].nama << "' berhasil diupdate menjadi " << stokBaru << "." << std::endl;
                 break;
             }
-            case 5: { // Hapus Barang
+            case 5: {
                 if (inventaris.empty()) {
                     std::cout << "\nInventaris kosong. Tidak ada barang untuk dihapus." << std::endl;
                     break;
@@ -243,7 +232,7 @@ int main() {
                 std::cout << "🗑️ Barang '" << namaBarangDihapus << "' berhasil dihapus dari inventaris." << std::endl;
                 break;
             }
-            case 6: { // Hitung Total Nilai Inventaris
+            case 6: {
                 if (inventaris.empty()) {
                     std::cout << "\nInventaris kosong. Total nilai inventaris: Rp 0.00" << std::endl;
                     break;
@@ -253,14 +242,14 @@ int main() {
                     totalNilai += (barang.stok * barang.hargaSatuan);
                 }
                 std::cout << "\n==========================================" << std::endl;
-                std::cout << "        TOTAL NILAI INVENTARIS           " << std::endl;
+                std::cout << "         TOTAL NILAI INVENTARIS          " << std::endl;
                 std::cout << "==========================================" << std::endl;
                 std::cout << "  Jumlah Barang Unik: " << inventaris.size() << std::endl;
                 std::cout << "  Total Nilai       : Rp " << std::fixed << std::setprecision(2) << totalNilai << std::endl;
                 std::cout << "==========================================" << std::endl;
                 break;
             }
-            case 7: { // Keluar
+            case 7: {
                 std::cout << "\nTerima kasih telah menggunakan Sistem Manajemen Inventaris. Sampai jumpa! 👋" << std::endl;
                 break;
             }
@@ -269,14 +258,14 @@ int main() {
         if (pilihan != 7) {
             std::cout << "\nKembali ke Menu Utama Inventaris? (Y/N): ";
             std::cin >> lanjutAplikasi;
-            clearInputBuffer(); // Bersihkan buffer setelah cin
+            clearInputBuffer();
         } else {
-            lanjutAplikasi = 'N'; // Keluar dari loop jika pilihan adalah 7
+            lanjutAplikasi = 'N';
         }
     } while (lanjutAplikasi == 'Y' || lanjutAplikasi == 'y');
 
     std::cout << "\nTekan Enter untuk keluar...";
-    std::cin.get(); // Menunggu user menekan enter
+    std::cin.get();
 
     return 0;
 }

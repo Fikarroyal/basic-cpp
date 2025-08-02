@@ -1,29 +1,25 @@
-#include <iostream>   // Untuk input/output dasar (cout, cin)
-#include <vector>     // Untuk menyimpan daftar transaksi
-#include <string>     // Untuk std::string
-#include <iomanip>    // Untuk manipulasi output (setw, left, right)
-#include <limits>     // Untuk std::numeric_limits (untuk clear buffer)
-#include <map>        // Untuk rekapitulasi berdasarkan kategori
-#include <algorithm>  // Untuk std::transform (kalau perlu untuk case-insensitivity)
-#include <ctime>      // Untuk waktu dan tanggal
-#include <sstream>    // Untuk stringstream
+#include <iostream>
+#include <vector>
+#include <string>
+#include <iomanip>
+#include <limits>
+#include <map>
+#include <algorithm>
+#include <ctime>
+#include <sstream>
 
-// Struktur untuk merepresentasikan satu transaksi
 struct Transaksi {
-    std::string tipe;       // "Pemasukan" atau "Pengeluaran"
-    std::string kategori;   // Contoh: Gaji, Makanan, Transportasi, Hiburan
+    std::string tipe;
+    std::string kategori;
     double jumlah;
     std::string deskripsi;
-    std::string tanggal;    // Format: DD-MM-YYYY
+    std::string tanggal;
 };
 
-// Variabel global untuk saldo
 double saldo = 0.0;
-// Vector global untuk menyimpan semua transaksi
 std::vector<Transaksi> daftarTransaksi;
 
-// --- Fungsi Pembantu untuk Tampilan ---
-const int TOTAL_WIDTH = 80; // Lebar total tampilan konsol
+const int TOTAL_WIDTH = 80;
 
 void printSeparator(char c = '=') {
     std::cout << std::string(TOTAL_WIDTH, c) << std::endl;
@@ -31,20 +27,18 @@ void printSeparator(char c = '=') {
 
 void printHeader(const std::string& title) {
     printSeparator();
-    std::cout << std::left << std::setw(TOTAL_WIDTH / 2 - title.length() / 2) << " " 
+    std::cout << std::left << std::setw(TOTAL_WIDTH / 2 - title.length() / 2) << " "
               << title << std::endl;
     printSeparator();
 }
 
-// Fungsi untuk mendapatkan input string dari pengguna
 std::string getInputString(const std::string& prompt) {
     std::string input;
     std::cout << prompt;
-    std::getline(std::cin >> std::ws, input); 
+    std::getline(std::cin >> std::ws, input);
     return input;
 }
 
-// Fungsi untuk mendapatkan input double dari pengguna
 double getInputDouble(const std::string& prompt) {
     double value;
     while (true) {
@@ -52,26 +46,23 @@ double getInputDouble(const std::string& prompt) {
         std::cin >> value;
         if (std::cin.fail()) {
             std::cout << "Input tidak valid. Harap masukkan angka.\n";
-            std::cin.clear(); // Hapus flag error
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Buang sisa input
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         } else {
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Buang sisa newline
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             return value;
         }
     }
 }
 
-// Fungsi untuk mendapatkan tanggal saat ini
 std::string getCurrentDate() {
     time_t now = time(0);
     struct tm tstruct;
-    char buf[11]; // DD-MM-YYYY + null terminator
+    char buf[11];
     tstruct = *localtime(&now);
     strftime(buf, sizeof(buf), "%d-%m-%Y", &tstruct);
     return buf;
 }
-
-// --- Fungsi Inti Program ---
 
 void catatTransaksi() {
     printHeader("CATAT TRANSAKSI BARU");
@@ -98,9 +89,8 @@ void catatTransaksi() {
     t.kategori = getInputString("Kategori (contoh: Gaji, Makanan, Transportasi, Hiburan, Belanja): ");
     t.jumlah = getInputDouble("Jumlah Transaksi: Rp ");
     t.deskripsi = getInputString("Deskripsi Singkat: ");
-    t.tanggal = getCurrentDate(); // Otomatis mengisi tanggal saat ini
+    t.tanggal = getCurrentDate();
 
-    // Update saldo
     if (t.tipe == "Pemasukan") {
         saldo += t.jumlah;
     } else {
@@ -114,8 +104,8 @@ void catatTransaksi() {
 
 void lihatSaldo() {
     printHeader("SALDO SAAT INI");
-    std::cout << std::fixed << std::setprecision(2); // Format 2 angka di belakang koma
-    std::cout << std::left << std::setw(TOTAL_WIDTH / 2) << "Saldo Anda:" 
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << std::left << std::setw(TOTAL_WIDTH / 2) << "Saldo Anda:"
               << "Rp " << std::right << std::setw(TOTAL_WIDTH / 2 - std::string("Rp ").length()) << saldo << std::endl;
     printSeparator();
 }
@@ -126,7 +116,6 @@ void lihatDaftarTransaksi() {
     if (daftarTransaksi.empty()) {
         std::cout << std::left << std::setw(TOTAL_WIDTH) << "Belum ada transaksi yang dicatat." << std::endl;
     } else {
-        // Header tabel
         std::cout << std::left << std::setw(12) << "Tanggal"
                   << std::setw(12) << "Tipe"
                   << std::setw(15) << "Kategori"
@@ -134,13 +123,12 @@ void lihatDaftarTransaksi() {
                   << std::setw(26) << "Deskripsi" << std::endl;
         printSeparator('-');
 
-        // Isi tabel
         std::cout << std::fixed << std::setprecision(2);
         for (const auto& t : daftarTransaksi) {
             std::cout << std::left << std::setw(12) << t.tanggal
                       << std::setw(12) << t.tipe
                       << std::setw(15) << t.kategori
-                      << std::right << std::setw(12) << t.jumlah << "   " // Spasi tambahan agar rata
+                      << std::right << std::setw(12) << t.jumlah << "    "
                       << std::left << std::setw(26) << t.deskripsi << std::endl;
         }
     }
@@ -172,55 +160,51 @@ void rekapTransaksi() {
         }
     }
 
-    // Rekap Pemasukan
     std::cout << "\n--- Rekap Pemasukan per Kategori ---\n";
     printSeparator('-');
     if (pemasukanPerKategori.empty()) {
         std::cout << std::left << std::setw(TOTAL_WIDTH) << "Tidak ada pemasukan." << std::endl;
     } else {
-        std::cout << std::left << std::setw(30) << "Kategori" 
+        std::cout << std::left << std::setw(30) << "Kategori"
                   << std::right << std::setw(20) << "Jumlah (Rp)" << std::endl;
         printSeparator('-');
         std::cout << std::fixed << std::setprecision(2);
         for (const auto& pair : pemasukanPerKategori) {
-            std::cout << std::left << std::setw(30) << pair.first 
+            std::cout << std::left << std::setw(30) << pair.first
                       << std::right << std::setw(20) << pair.second << std::endl;
         }
     }
     printSeparator('-');
-    std::cout << std::left << std::setw(30) << "TOTAL PEMASUKAN" 
+    std::cout << std::left << std::setw(30) << "TOTAL PEMASUKAN"
               << "Rp " << std::right << std::setw(17) << totalPemasukan << std::endl;
     printSeparator();
 
-    // Rekap Pengeluaran
     std::cout << "\n--- Rekap Pengeluaran per Kategori ---\n";
     printSeparator('-');
     if (pengeluaranPerKategori.empty()) {
         std::cout << std::left << std::setw(TOTAL_WIDTH) << "Tidak ada pengeluaran." << std::endl;
     } else {
-        std::cout << std::left << std::setw(30) << "Kategori" 
+        std::cout << std::left << std::setw(30) << "Kategori"
                   << std::right << std::setw(20) << "Jumlah (Rp)" << std::endl;
         printSeparator('-');
         std::cout << std::fixed << std::setprecision(2);
         for (const auto& pair : pengeluaranPerKategori) {
-            std::cout << std::left << std::setw(30) << pair.first 
+            std::cout << std::left << std::setw(30) << pair.first
                       << std::right << std::setw(20) << pair.second << std::endl;
         }
     }
     printSeparator('-');
-    std::cout << std::left << std::setw(30) << "TOTAL PENGELUARAN" 
+    std::cout << std::left << std::setw(30) << "TOTAL PENGELUARAN"
               << "Rp " << std::right << std::setw(17) << totalPengeluaran << std::endl;
     printSeparator();
 }
 
 
-// Fungsi utama program
 int main() {
     int pilihan;
     
-    // Header utama aplikasi
     printSeparator();
-    std::cout << std::left << std::setw(TOTAL_WIDTH / 2 - std::string("SISTEM PENGELOLAAN UANG").length() / 2) << " " 
+    std::cout << std::left << std::setw(TOTAL_WIDTH / 2 - std::string("SISTEM PENGELOLAAN UANG").length() / 2) << " "
               << "SISTEM PENGELOLAAN UANG" << std::endl;
     printSeparator();
 
@@ -236,31 +220,30 @@ int main() {
         std::cout << "Masukkan pilihan Anda: ";
         std::cin >> pilihan;
 
-        // Validasi input pilihan menu
         if (std::cin.fail()) {
             std::cout << "Input tidak valid. Harap masukkan angka pilihan menu.\n";
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            continue; // Kembali ke awal loop
+            continue;
         }
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Buang sisa newline
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
         switch (pilihan) {
             case 1: catatTransaksi(); break;
             case 2: lihatSaldo(); break;
             case 3: lihatDaftarTransaksi(); break;
             case 4: rekapTransaksi(); break;
-            case 5: 
+            case 5:
                 printHeader("Terima kasih telah menggunakan sistem pengelolaan uang!");
                 break;
             default:
                 std::cout << "Pilihan tidak valid. Silakan coba lagi.\n";
                 break;
         }
-        std::cout << "\n"; // Spasi setelah setiap aksi
+        std::cout << "\n";
         if (pilihan != 5) {
             std::cout << "Tekan Enter untuk melanjutkan...";
-            std::cin.get(); // Menunggu Enter
+            std::cin.get();
         }
         
     } while (pilihan != 5);

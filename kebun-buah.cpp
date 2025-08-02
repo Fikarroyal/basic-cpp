@@ -1,45 +1,38 @@
-#include <iostream>   // Untuk input/output konsol
-#include <vector>     // Untuk menggunakan std::vector
-#include <string>     // Untuk menggunakan std::string
-#include <fstream>    // Untuk operasi file input/output
-#include <sstream>    // Untuk stringstream
-#include <chrono>     // Untuk manipulasi waktu dan tanggal
-#include <iomanip>    // Untuk manipulasi format output
-#include <algorithm>  // Untuk algoritma seperti std::transform, std::sort, std::remove_if
-#include <limits>     // Untuk std::numeric_limits
-#include <map>        // Untuk menggunakan std::map
-#include <utility>    // Untuk std::pair
+#include <iostream>
+#include <vector>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <chrono>
+#include <iomanip>
+#include <algorithm>
+#include <limits>
+#include <map>
+#include <utility>
 
-// --- Struktur Data ---
-
-// Struktur untuk mendefinisikan jenis buah yang dikelola.
 struct FruitType {
-    int id;                   // ID unik untuk jenis buah
-    std::string name;         // Nama buah (contoh: "Apel Fuji", "Mangga Harum Manis")
-    int maturation_period_days; // Perkiraan durasi dari tanam/bibit hingga mulai berbuah/panen pertama (dalam hari)
+    int id;
+    std::string name;
+    int maturation_period_days;
 };
 
-// Struktur untuk mencatat setiap insiden penanaman/budidaya buah.
 struct CultivationBatch {
-    int id;                       // ID unik untuk batch budidaya ini
-    int fruit_type_id;            // ID dari jenis buah yang dibudidayakan (merujuk ke FruitType)
-    std::string plant_date;       // Tanggal saat penanaman/bibit dimulai (format YYYY-MM-DD)
-    std::string harvest_date_est; // Perkiraan tanggal kapan buah ini siap dipanen (YYYY-MM-DD)
-    double harvested_quantity;    // Kuantitas aktual yang dipanen dari batch ini (misal: dalam kg atau buah). Default 0 jika belum panen.
-    bool is_harvested;            // Status panen: true jika sudah dipanen (setidaknya sekali), false jika masih dalam proses.
+    int id;
+    int fruit_type_id;
+    std::string plant_date;
+    std::string harvest_date_est;
+    double harvested_quantity;
+    bool is_harvested;
 };
 
-// Struktur untuk mencatat setiap transaksi penjualan buah.
 struct SaleTransaction {
-    int id;                   // ID unik untuk transaksi penjualan ini
-    std::string fruit_name;   // Nama buah yang terjual (untuk riwayat)
-    std::string sale_date;    // Tanggal transaksi penjualan (YYYY-MM-DD)
-    double quantity_sold;     // Jumlah buah yang terjual (misal: dalam kg atau buah)
-    double price_per_unit;    // Harga jual per unit (misal: harga per kg atau per buah)
-    double total_price;       // Total harga untuk transaksi ini (quantity_sold * price_per_unit)
+    int id;
+    std::string fruit_name;
+    std::string sale_date;
+    double quantity_sold;
+    double price_per_unit;
+    double total_price;
 };
-
-// --- Variabel Global ---
 
 std::vector<FruitType> fruitTypes;
 std::vector<CultivationBatch> cultivationBatches;
@@ -50,8 +43,6 @@ int nextCultivationBatchId = 1;
 int nextSaleTransactionId = 1;
 
 const std::string DATA_FILE = "fruit_farm_data.txt";
-
-// --- Fungsi-fungsi Pembantu (Helper Functions) ---
 
 void clearInputBuffer() {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -139,8 +130,6 @@ std::vector<std::string> splitString(const std::string& s, const std::string& de
     } while (pos != std::string::npos);
     return tokens;
 }
-
-// --- Fungsi Penyimpanan dan Pemuatan Data ---
 
 void saveData() {
     std::ofstream outFile(DATA_FILE);
@@ -251,8 +240,6 @@ void loadData() {
     std::cout << "[INFO] Data kebun buah berhasil dimuat." << std::endl;
 }
 
-// --- Fungsi Manajemen Jenis Buah ---
-
 void addFruitType() {
     std::cout << "\n--- Tambah Jenis Buah Baru ---" << std::endl;
     std::string name = getNonEmptyStringInput("Masukkan nama buah (contoh: Apel Fuji, Pisang Cavendish): ");
@@ -265,7 +252,6 @@ void addFruitType() {
         }
     }
 
-    // Untuk buah, durasi bisa diartikan sebagai "periode pematangan awal" dari tanam bibit
     int duration = getValidIntegerInput("Masukkan perkiraan durasi dari tanam/bibit hingga panen pertama (dalam hari): ", 1);
 
     FruitType newType = {nextFruitTypeId++, name, duration};
@@ -371,8 +357,6 @@ void deleteFruitType() {
     }
 }
 
-// --- Fungsi Manajemen Budidaya Buah ---
-
 void addCultivationBatch() {
     viewFruitTypes();
     if (fruitTypes.empty()) {
@@ -455,22 +439,17 @@ void updateHarvestResult() {
         std::cout << "[!] Budidaya dengan ID " << idToUpdate << " tidak ditemukan." << std::endl;
         return;
     }
-
-    // Untuk buah, kita bisa menambahkan hasil panen ke yang sudah ada, karena pohon bisa panen berkali-kali
-    // Jika ingin hanya satu kali update, tambahkan if (targetBatch->is_harvested) { ... return; }
     
     std::cout << "Hasil panen saat ini untuk budidaya ID " << targetBatch->id << " adalah " 
               << std::fixed << std::setprecision(2) << targetBatch->harvested_quantity << " kg." << std::endl;
     double quantity = getValidDoubleInput("Masukkan kuantitas hasil panen baru (misal: 100.5 kg, akan ditambahkan ke yang sudah ada): ", 0.0);
     
-    targetBatch->harvested_quantity += quantity; // Tambahkan kuantitas panen
-    targetBatch->is_harvested = true; // Tandai sebagai sudah dipanen (setidaknya sekali)
+    targetBatch->harvested_quantity += quantity;
+    targetBatch->is_harvested = true;
 
     std::cout << "[✅] Hasil panen untuk budidaya ID " << idToUpdate << " berhasil dicatat. Total: " << targetBatch->harvested_quantity << " kg." << std::endl;
     saveData();
 }
-
-// --- Fungsi Manajemen Stok & Penjualan Buah ---
 
 void viewHarvestedStock() {
     std::cout << "\n==========================================================" << std::endl;
@@ -596,8 +575,6 @@ void viewSaleHistory() {
     std::cout << "==================================================================================================\n" << std::endl;
 }
 
-// --- Fungsi Laporan & Statistik ---
-
 void viewUpcomingHarvests() {
     std::cout << "\n==========================================================" << std::endl;
     std::cout << "                  PANEN BUAH MENDATANG                    " << std::endl;
@@ -607,11 +584,9 @@ void viewUpcomingHarvests() {
 
     std::vector<CultivationBatch> upcoming;
     for (const auto& cb : cultivationBatches) {
-        if (!cb.is_harvested && cb.harvest_date_est >= today) { // Panen pertama yang belum terjadi
+        if (!cb.is_harvested && cb.harvest_date_est >= today) {
             upcoming.push_back(cb);
         }
-        // Jika pohon buah bisa panen berkali-kali setelah panen pertama, logika ini perlu diadaptasi.
-        // Untuk saat ini, kita hanya fokus pada "panen pertama" atau "panen yang belum dicatat".
     }
 
     std::sort(upcoming.begin(), upcoming.end(), [](const CultivationBatch& a, const CultivationBatch& b) {
@@ -724,9 +699,6 @@ void showTotalRevenue() {
     std::cout << "Total pendapatan dari semua penjualan buah: Rp " << std::fixed << std::setprecision(2) << totalRevenue << std::endl;
     std::cout << "==========================================================\n" << std::endl;
 }
-
-
-// --- Fungsi Utama (Main Program Loop) ---
 
 int main() {
     loadData();

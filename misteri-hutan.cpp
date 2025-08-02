@@ -1,22 +1,18 @@
-#include <iostream>   // Input/Output
-#include <vector>     // std::vector
-#include <string>     // std::string, std::getline
-#include <map>        // std::map untuk inventaris
-#include <limits>     // std::numeric_limits (untuk membersihkan buffer)
-#include <iomanip>    // std::setw, std::left/right (untuk tampilan)
+#include <iostream>
+#include <vector>
+#include <string>
+#include <map>
+#include <limits>
+#include <iomanip>
 
-// --- Global Variable / Game State ---
-int playerHealth; // Kesehatan pemain
-std::map<std::string, int> inventory; // Inventaris pemain (nama item, jumlah)
-bool gameOver; // Menandakan apakah game sudah berakhir
+int playerHealth;
+std::map<std::string, int> inventory;
+bool gameOver;
 
-// --- Fungsi untuk Membersihkan Buffer Input ---
 void clearInputBuffer() {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-// --- Fungsi untuk Mendapatkan Input Pilihan Angka yang Valid ---
-// Menerima prompt, nilai minimum, dan nilai maksimum yang diizinkan
 int getValidChoiceInput(const std::string& prompt, int min, int max) {
     int choice;
     while (true) {
@@ -27,13 +23,12 @@ int getValidChoiceInput(const std::string& prompt, int min, int max) {
             std::cin.clear();
             clearInputBuffer();
         } else {
-            clearInputBuffer(); // Bersihkan buffer setelah input valid
+            clearInputBuffer();
             return choice;
         }
     }
 }
 
-// --- Fungsi untuk Menampilkan Status Pemain ---
 void displayPlayerStatus() {
     std::cout << "\n------------------- STATUS ANDA -------------------" << std::endl;
     std::cout << "Kesehatan  : " << playerHealth << " HP" << std::endl;
@@ -48,29 +43,26 @@ void displayPlayerStatus() {
     std::cout << "---------------------------------------------------\n" << std::endl;
 }
 
-// --- Fungsi untuk Menambahkan Item ke Inventaris ---
 void addItemToInventory(const std::string& item, int quantity = 1) {
     inventory[item] += quantity;
     std::cout << "\n[!] Anda mendapatkan " << quantity << "x **" << item << "**!" << std::endl;
-    displayPlayerStatus(); // Perbarui status setelah item ditambahkan
+    displayPlayerStatus();
 }
 
-// --- Fungsi untuk Menghapus Item dari Inventaris ---
 bool removeItemFromInventory(const std::string& item, int quantity = 1) {
     if (inventory.count(item) && inventory[item] >= quantity) {
         inventory[item] -= quantity;
         if (inventory[item] == 0) {
-            inventory.erase(item); // Hapus entri jika jumlahnya 0
+            inventory.erase(item);
         }
         std::cout << "\n[!] Anda menggunakan " << quantity << "x **" << item << "**." << std::endl;
-        displayPlayerStatus(); // Perbarui status setelah item digunakan
+        displayPlayerStatus();
         return true;
     }
     std::cout << "\n[!] Anda tidak memiliki cukup **" << item << "**." << std::endl;
-    return false; // Item tidak cukup atau tidak ada
+    return false;
 }
 
-// --- Fungsi untuk Mengelola Kesehatan Pemain ---
 void changePlayerHealth(int amount, const std::string& reason) {
     playerHealth += amount;
     if (amount > 0) {
@@ -78,12 +70,12 @@ void changePlayerHealth(int amount, const std::string& reason) {
     } else {
         std::cout << "\n[-] Kesehatan Anda berkurang " << -amount << " HP karena " << reason << "." << std::endl;
     }
-    if (playerHealth > 100) playerHealth = 100; // Batasi kesehatan maksimal
+    if (playerHealth > 100) playerHealth = 100;
     
-    displayPlayerStatus(); // Tampilkan status kesehatan terkini
+    displayPlayerStatus();
 
     if (playerHealth <= 0) {
-        gameOver = true; // Set game over menjadi true
+        gameOver = true;
         std::cout << "\n=======================================================" << std::endl;
         std::cout << "                      GAME OVER                       " << std::endl;
         std::cout << " " << reason << std::endl;
@@ -93,25 +85,22 @@ void changePlayerHealth(int amount, const std::string& reason) {
     }
 }
 
-// --- FUNGSI UNTUK SKENARIO GAME (SETIAP FUNGSI ADALAH SATU LOKASI/PERISTIWA) ---
-// Perhatikan: Setiap fungsi akan memeriksa 'gameOver' sebelum melanjutkan
 void persimpanganHutan();
 void guaMisterius();
 void sungaiBerarus();
 void perkampunganTua();
 void akhirMenang();
-void akhirKalah(const std::string& reason); // Fungsi akhirKalah sudah diintegrasikan ke changePlayerHealth
+void akhirKalah(const std::string& reason);
 
 
 void mulaiPetualangan() {
-    if (gameOver) return; // Langsung keluar jika sudah game over
+    if (gameOver) return;
 
     std::cout << "=======================================================" << std::endl;
-    std::cout << "           MISTERI HUTAN KEGELAPAN DIMULAI             " << std::endl;
+    std::cout << "              MISTERI HUTAN KEGELAPAN DIMULAI              " << std::endl;
     std::cout << "=======================================================\n" << std::endl;
     std::cout << "Anda terbangun di tengah hutan yang gelap dan sunyi, tanpa mengingat bagaimana Anda sampai di sini." << std::endl;
-    std::cout << "Kabut tebal menyelimuti pepohonan tinggi, dan suara-suara asing terdengar dari kejauhan." << std::endl;
-    std::cout << "Anda merasa sedikit pusing dan hanya memiliki sedikit persediaan.\n" << std::endl;
+    std::cout << "Kabut tebal menyelimuti pepohonan tinggi, dan suara-suara asing terdengar dari kejauhan." << std::cout << "Anda merasa sedikit pusing dan hanya memiliki sedikit persediaan.\n" << std::endl;
     displayPlayerStatus();
 
     std::cout << "Apa yang ingin Anda lakukan?" << std::endl;
@@ -123,7 +112,7 @@ void mulaiPetualangan() {
     if (choice == 1) {
         std::cout << "\nAnda mencoba memusatkan pikiran, tapi hanya rasa sakit kepala yang Anda dapatkan." << std::endl;
         changePlayerHealth(-5, "memaksakan diri");
-        if (gameOver) return; // Penting: cek setelah perubahan kesehatan
+        if (gameOver) return;
         persimpanganHutan();
     } else {
         std::cout << "\nAnda memutuskan untuk tidak membuang waktu dan segera mencari jalan keluar." << std::endl;
@@ -151,7 +140,7 @@ void persimpanganHutan() {
         std::cout << "\nAnda mencoba kembali ke Selatan, namun hutan terasa semakin membingungkan." << std::endl;
         changePlayerHealth(-10, "tersesat di jalur yang sama");
         if (gameOver) return;
-        persimpanganHutan(); // Kembali ke persimpangan lagi
+        persimpanganHutan();
     }
 }
 
@@ -212,7 +201,7 @@ void sungaiBerarus() {
 
     if (choice == 1) {
         std::cout << "\nAnda perlahan mulai menyeberangi jembatan yang reyot." << std::endl;
-        if (playerHealth >= 40) { // Lebih mudah jika sehat
+        if (playerHealth >= 40) {
             std::cout << "Dengan hati-hati dan langkah mantap, Anda berhasil menyeberang!" << std::endl;
             perkampunganTua();
         } else {
@@ -220,7 +209,7 @@ void sungaiBerarus() {
             changePlayerHealth(-30, "jatuh ke sungai dan hanyut sebentar");
             if (gameOver) return;
             std::cout << "Anda berhasil berpegangan, tapi tidak berani melanjutkan. Anda kembali ke tepi." << std::endl;
-            sungaiBerarus(); // Kembali ke sungai
+            sungaiBerarus();
         }
     } else if (choice == 2) {
         std::cout << "\nAnda memutuskan untuk berjalan memutar menyusuri tepi sungai." << std::endl;
@@ -252,12 +241,12 @@ void perkampunganTua() {
         std::cout << "\nAnda mendekati gerbang. Terkunci rapat." << std::endl;
         if (inventory.count("Kunci Kuno") > 0 && inventory["Kunci Kuno"] > 0) {
             std::cout << "Anda mencoba menggunakan **Kunci Kuno**..." << std::endl;
-            if (removeItemFromInventory("Kunci Kuno")) { // Pastikan item terhapus
+            if (removeItemFromInventory("Kunci Kuno")) {
                 std::cout << "Klik! Gerbang terbuka!" << std::endl;
-                akhirMenang(); // Ini adalah ending kemenangan
-            } else { // Seharusnya tidak terjadi karena sudah dicek .count() dan > 0
+                akhirMenang();
+            } else {
                 std::cout << "Entah kenapa, kunci Anda tidak bisa digunakan. Anda kebingungan." << std::endl;
-                perkampunganTua(); // Kembali ke perkampungan
+                perkampunganTua();
             }
         } else {
             std::cout << "Gerbang ini terkunci. Anda tidak punya kunci yang cocok." << std::endl;
@@ -265,43 +254,38 @@ void perkampunganTua() {
             changePlayerHealth(-25, "panik karena terjebak");
             if (gameOver) return;
             std::cout << "Anda bersembunyi di balik semak dan harus memikirkan cara lain." << std::endl;
-            perkampunganTua(); // Kembali ke perkampungan
+            perkampunganTua();
         }
     } else if (choice == 2) {
         std::cout << "\nAnda menjelajahi perkampungan. Suasana sangat hening." << std::endl;
         std::cout << "Anda menemukan sebuah rumah yang terlihat sedikit terawat. Di dalamnya ada kotak P3K!" << std::endl;
         changePlayerHealth(30, "menemukan kotak P3K");
-        // Tidak ada cek gameOver di sini karena HP bertambah
         std::cout << "Setelah itu, Anda kembali ke gerbang.\n" << std::endl;
         perkampunganTua();
     } else {
-        sungaiBerarus(); // Kembali ke sungai
+        sungaiBerarus();
     }
 }
 
-// --- AKHIR GAME (Ending Kemenangan Saja, Kalah sudah di changePlayerHealth) ---
-
 void akhirMenang() {
-    if (gameOver) return; // Pastikan tidak ada double ending
+    if (gameOver) return;
 
     std::cout << "\n=======================================================" << std::endl;
     std::cout << "                      SELAMAT!                        " << std::endl;
     std::cout << " Anda berhasil membuka gerbang dan melihat jalan raya di kejauhan!" << std::endl;
     std::cout << " Anda telah lolos dari Misteri Hutan Kegelapan!" << std::endl;
-    std::cout << " Petualangan Anda berakhir dengan sukses.               " << std::endl;
+    std::cout << " Petualangan Anda berakhir dengan sukses.              " << std::endl;
     std::cout << "=======================================================\n" << std::endl;
-    gameOver = true; // Set game over karena sudah menang
+    gameOver = true;
 }
 
-// --- Fungsi Penutup Aplikasi ---
 void akhirKeluarAplikasi() {
     std::cout << "\n******************************************************" << std::endl;
-    std::cout << "* TERIMA KASIH SUDAH BERMAIN!                        *" << std::endl;
+    std::cout << "* TERIMA KASIH SUDAH BERMAIN!                          *" << std::endl;
     std::cout << "* Semoga petualangan Anda selanjutnya lebih beruntung. *" << std::endl;
     std::cout << "******************************************************" << std::endl;
 }
 
-// --- Fungsi Main Game ---
 int main() {
     char mainLagi;
 
@@ -311,30 +295,25 @@ int main() {
     std::cout << "*****************************************************" << std::endl;
 
     do {
-        // --- Reset Game State untuk Permainan Baru ---
         playerHealth = 100;
         inventory.clear();
-        gameOver = false; // Reset status game over
+        gameOver = false;
 
-        mulaiPetualangan(); // Mulai cerita
+        mulaiPetualangan();
 
-        // Jika game sudah berakhir (menang atau kalah), tanyakan apakah mau main lagi
         if (gameOver) {
             std::cout << "\nIngin mencoba petualangan lain? (Y/N): ";
             std::cin >> mainLagi;
             clearInputBuffer();
         } else {
-            // Ini akan terjadi jika pemain keluar dari game dengan cara yang tidak normal
-            // Misalnya, jika ada jalur yang belum diimplementasikan mengarah ke sini
-            // Untuk skenario ini, kita anggap pemain tidak mau lanjut
-            mainLagi = 'N'; 
+            mainLagi = 'N';
         }
 
     } while (mainLagi == 'Y' || mainLagi == 'y');
 
-    akhirKeluarAplikasi(); // Pesan penutup aplikasi
+    akhirKeluarAplikasi();
     std::cout << "\nTekan Enter untuk keluar...";
-    std::cin.get(); // Menunggu user menekan enter sebelum menutup konsol
+    std::cin.get();
 
     return 0;
 }

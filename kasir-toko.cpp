@@ -1,38 +1,33 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <iomanip> // Untuk manipulasi output (setw, setprecision, fixed)
-#include <limits>  // Untuk numeric_limits
-#include <ctime>   // Untuk mendapatkan waktu saat ini
+#include <iomanip>
+#include <limits>
+#include <ctime>
 
-// Struktur untuk merepresentasikan sebuah produk
 struct Produk {
     std::string nama;
     double harga;
     int stok;
 };
 
-// Struktur untuk item yang dibeli dalam transaksi
 struct ItemPembelian {
-    Produk produk; // Menyimpan detail produk
-    int jumlah;    // Jumlah yang dibeli
+    Produk produk;
+    int jumlah;
 };
 
-// Fungsi untuk mendapatkan waktu saat ini
 std::string getCurrentDateTime() {
     time_t now = time(0);
     struct tm tstruct;
     char buf[80];
     tstruct = *localtime(&now);
-    // Format: DD-MM-YYYY HH:MM:SS
     strftime(buf, sizeof(buf), "%d-%m-%Y %H:%M:%S", &tstruct);
     return buf;
 }
 
-// Fungsi untuk menampilkan daftar produk yang tersedia
 void tampilkanDaftarProduk(const std::vector<Produk>& daftarProduk) {
     std::cout << "\n===================================" << std::endl;
-    std::cout << "         DAFTAR PRODUK TOKO          " << std::endl;
+    std::cout << "            DAFTAR PRODUK TOKO           " << std::endl;
     std::cout << "===================================" << std::endl;
     std::cout << std::left << std::setw(5) << "No."
               << std::left << std::setw(25) << "Nama Produk"
@@ -48,7 +43,6 @@ void tampilkanDaftarProduk(const std::vector<Produk>& daftarProduk) {
     std::cout << "=================================================" << std::endl;
 }
 
-// Fungsi untuk proses pembelian produk
 void prosesPembelian(std::vector<Produk>& daftarProduk, std::vector<ItemPembelian>& keranjang) {
     int pilihanProduk;
     int jumlahBeli;
@@ -76,7 +70,6 @@ void prosesPembelian(std::vector<Produk>& daftarProduk, std::vector<ItemPembelia
             continue;
         }
 
-        // Ambil produk yang dipilih
         Produk& produkTerpilih = daftarProduk[pilihanProduk - 1];
 
         std::cout << "Masukkan jumlah '" << produkTerpilih.nama << "' yang ingin dibeli: ";
@@ -94,7 +87,6 @@ void prosesPembelian(std::vector<Produk>& daftarProduk, std::vector<ItemPembelia
         } else if (jumlahBeli > produkTerpilih.stok) {
             std::cout << "Maaf, stok '" << produkTerpilih.nama << "' tidak cukup. Sisa stok: " << produkTerpilih.stok << std::endl;
         } else {
-            // Tambahkan ke keranjang belanja
             bool ditemukan = false;
             for (auto& item : keranjang) {
                 if (item.produk.nama == produkTerpilih.nama) {
@@ -106,11 +98,11 @@ void prosesPembelian(std::vector<Produk>& daftarProduk, std::vector<ItemPembelia
             if (!ditemukan) {
                 keranjang.push_back({produkTerpilih, jumlahBeli});
             }
-            produkTerpilih.stok -= jumlahBeli; // Kurangi stok
+            produkTerpilih.stok -= jumlahBeli;
             std::cout << "Produk berhasil ditambahkan ke keranjang." << std::endl;
         }
 
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Bersihkan buffer
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cout << "\nLanjutkan belanja? (y/n): ";
         char choice;
         std::cin >> choice;
@@ -120,7 +112,6 @@ void prosesPembelian(std::vector<Produk>& daftarProduk, std::vector<ItemPembelia
     }
 }
 
-// Fungsi untuk menampilkan nota pembayaran
 void tampilkanNota(const std::vector<ItemPembelian>& keranjang) {
     if (keranjang.empty()) {
         std::cout << "\nKeranjang belanja kosong. Tidak ada nota yang bisa dicetak." << std::endl;
@@ -128,18 +119,18 @@ void tampilkanNota(const std::vector<ItemPembelian>& keranjang) {
     }
 
     double totalHarga = 0.0;
-    double ppn = 0.0; // PPN 11% (contoh)
+    double ppn = 0.0;
     double totalBayar = 0.0;
 
     std::cout << "\n\n";
     std::cout << "====================================================" << std::endl;
-    std::cout << "               TOKO SEMBAKO SERBAGUNA            " << std::endl;
-    std::cout << "         Jl. Super No. 123, Kota Yogyakarta          " << std::endl;
-    std::cout << "              Telp: 0822-1267-9800                  " << std::endl;
+    std::cout << "            TOKO SEMBAKO SERBAGUNA             " << std::endl;
+    std::cout << "            Jl. Super No. 123, Kota Yogyakarta           " << std::endl;
+    std::cout << "             Telp: 0822-1267-9800                  " << std::endl;
     std::cout << "====================================================" << std::endl;
     std::cout << "Tanggal & Waktu : " << getCurrentDateTime() << std::endl;
-    std::cout << "Nomor Transaksi : TRN-" << std::setw(6) << std::setfill('0') << (rand() % 900000 + 100000) << std::endl; // Nomor transaksi random
-    std::cout << std::setfill(' ') << std::endl; // Reset fill character
+    std::cout << "Nomor Transaksi : TRN-" << std::setw(6) << std::setfill('0') << (rand() % 900000 + 100000) << std::endl;
+    std::cout << std::setfill(' ') << std::endl;
 
     std::cout << "----------------------------------------------------" << std::endl;
     std::cout << std::left << std::setw(4) << "No."
@@ -159,7 +150,7 @@ void tampilkanNota(const std::vector<ItemPembelian>& keranjang) {
                   << std::right << std::setw(10) << std::fixed << std::setprecision(2) << subtotal << std::endl;
     }
 
-    ppn = totalHarga * 0.11; // Contoh PPN 11%
+    ppn = totalHarga * 0.11;
     totalBayar = totalHarga + ppn;
 
     std::cout << "----------------------------------------------------" << std::endl;
@@ -171,13 +162,12 @@ void tampilkanNota(const std::vector<ItemPembelian>& keranjang) {
     std::cout << std::left << std::setw(37) << "TOTAL YANG HARUS DIBAYAR"
               << std::right << std::setw(15) << std::fixed << std::setprecision(2) << totalBayar << std::endl;
     std::cout << "====================================================" << std::endl;
-    std::cout << "           TERIMA KASIH ATAS KUNJUNGAN ANDA     " << std::endl;
+    std::cout << "            TERIMA KASIH ATAS KUNJUNGAN ANDA      " << std::endl;
     std::cout << "====================================================" << std::endl;
 }
 
 
 int main() {
-    // Inisialisasi daftar produk (contoh)
     std::vector<Produk> daftarProduk = {
         {"Sabun Mandi", 5500.00, 50},
         {"Shampo", 12000.00, 30},
@@ -194,7 +184,7 @@ int main() {
 
     do {
         std::cout << "\n===================================" << std::endl;
-        std::cout << "         SISTEM KASIR TOKO           " << std::endl;
+        std::cout << "            SISTEM KASIR TOKO           " << std::endl;
         std::cout << "===================================" << std::endl;
         std::cout << "1. Mulai Transaksi Baru" << std::endl;
         std::cout << "2. Lihat Daftar Produk" << std::endl;
@@ -212,7 +202,7 @@ int main() {
 
         switch (pilihanMenu) {
             case 1:
-                keranjangBelanja.clear(); // Bersihkan keranjang untuk transaksi baru
+                keranjangBelanja.clear();
                 prosesPembelian(daftarProduk, keranjangBelanja);
                 tampilkanNota(keranjangBelanja);
                 break;
@@ -226,7 +216,7 @@ int main() {
                 std::cout << "Pilihan tidak valid. Silakan coba lagi." << std::endl;
                 break;
         }
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Membersihkan buffer setelah setiap input pilihan
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     } while (pilihanMenu != 3);
 

@@ -1,21 +1,18 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <iomanip> // Untuk manipulasi output (setprecision, fixed)
+#include <iomanip>
 
-// --- Struktur Data ---
 struct PaketWisata {
     std::string nama;
     std::string destinasi;
     int durasiHari;
     double hargaPerOrang;
 };
-
-// --- Fungsi untuk Menampilkan Detail Paket ---
 void tampilkanPaket(const std::vector<PaketWisata>& daftarPaket) {
     std::cout << "\n========================================" << std::endl;
     std::cout << "          DAFTAR PAKET WISATA           " << std::endl;
-    std::cout << "========================================\n" << std::endl; // Added newline for better spacing
+    std::cout << "========================================\n" << std::endl;
     for (size_t i = 0; i < daftarPaket.size(); ++i) {
         std::cout << "  " << i + 1 << ". " << daftarPaket[i].nama << std::endl;
         std::cout << "     Destinasi  : " << daftarPaket[i].destinasi << std::endl;
@@ -24,17 +21,13 @@ void tampilkanPaket(const std::vector<PaketWisata>& daftarPaket) {
         std::cout << "----------------------------------------" << std::endl;
     }
 }
-
-// --- Fungsi Utama ---
 int main() {
-    // Inisialisasi daftar paket wisata
     std::vector<PaketWisata> daftarPaket = {
         {"Pesona Bali", "Bali", 4, 2500000.00},
         {"Keindahan Lombok", "Lombok", 3, 2000000.00},
         {"Eksotis Raja Ampat", "Raja Ampat", 5, 7500000.00},
         {"Petualangan Jogja", "Yogyakarta", 3, 1800000.00},
         {"Surga Bawah Laut Bunaken", "Bunaken", 4, 3000000.00},
-        // --- Tambahan 10 Paket Baru ---
         {"Healing Gili Trawangan", "Gili Trawangan", 3, 2200000.00},
         {"Mystical Toraja", "Toraja", 5, 4500000.00},
         {"Amazing Komodo Island", "Pulau Komodo", 4, 6000000.00},
@@ -47,46 +40,38 @@ int main() {
         {"Aceh Sejarah & Budaya", "Aceh", 4, 3500000.00}
     };
 
-    // --- Sambutan Awal ---
     std::cout << "*****************************************************" << std::endl;
     std::cout << "* SELAMAT DATANG DI AGEN TRAVEL KAMI!               *" << std::endl;
     std::cout << "* Temukan petualangan impian Anda bersama kami!     *" << std::endl;
     std::cout << "*****************************************************" << std::endl;
-
-    // Tampilkan daftar paket
     tampilkanPaket(daftarPaket);
 
     int pilihanPaket;
     int jumlahPeserta;
     char konfirmasi;
-
-    // --- Input Pilihan Paket ---
+    
     do {
         std::cout << "\nMasukkan nomor paket yang ingin Anda pesan (1-" << daftarPaket.size() << "): ";
         std::cin >> pilihanPaket;
         if (std::cin.fail() || pilihanPaket < 1 || pilihanPaket > daftarPaket.size()) {
             std::cout << "Pilihan tidak valid. Mohon masukkan nomor yang benar." << std::endl;
-            std::cin.clear(); // Clear error flags
-            std::cin.ignore(10000, '\n'); // Discard invalid input
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
         }
     } while (pilihanPaket < 1 || pilihanPaket > daftarPaket.size());
 
-    // --- Input Jumlah Peserta ---
     do {
         std::cout << "Masukkan jumlah peserta: ";
         std::cin >> jumlahPeserta;
         if (std::cin.fail() || jumlahPeserta <= 0) {
             std::cout << "Jumlah peserta harus lebih dari 0 dan berupa angka." << std::endl;
-            std::cin.clear(); // Clear error flags
-            std::cin.ignore(10000, '\n'); // Discard invalid input
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
         }
     } while (jumlahPeserta <= 0);
 
-    // Dapatkan detail paket yang dipilih
     PaketWisata paketTerpilih = daftarPaket[pilihanPaket - 1];
     double totalHarga = paketTerpilih.hargaPerOrang * jumlahPeserta;
-
-    // --- Konfirmasi Pemesanan ---
     std::cout << "\n==========================================" << std::endl;
     std::cout << "       DETAIL PEMESANAN ANDA               " << std::endl;
     std::cout << "==========================================" << std::endl;
@@ -112,8 +97,8 @@ int main() {
     }
 
     std::cout << "\nTekan Enter untuk keluar...";
-    std::cin.ignore(); // Membersihkan buffer input
-    std::cin.get();    // Menunggu user menekan enter
+    std::cin.ignore();
+    std::cin.get();
 
     return 0;
 }

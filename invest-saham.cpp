@@ -1,44 +1,38 @@
-#include <iostream>   // Input/Output
-#include <vector>     // std::vector
-#include <string>     // std::string, std::getline
-#include <iomanip>    // std::fixed, std::setprecision, std::setw, std::left/right
-#include <limits>     // std::numeric_limits (untuk membersihkan buffer)
-#include <random>     // Untuk generator angka acak yang lebih baik (mt19937, uniform_real_distribution)
-#include <algorithm>  // Untuk std::remove_if
+#include <iostream>
+#include <vector>
+#include <string>
+#include <iomanip>
+#include <limits>
+#include <random>
+#include <algorithm>
 
-// --- Struktur Data untuk Saham Perusahaan ---
 struct CompanyStock {
-    std::string symbol; // Contoh: "AAPL", "GOOG"
-    std::string name;   // Contoh: "Apple Inc."
+    std::string symbol;
+    std::string name;
     double currentPrice;
 };
 
-// --- Struktur Data untuk Portofolio Pemain (Saham yang Dimiliki) ---
 struct OwnedStock {
     std::string symbol;
     int quantity;
-    double averageBuyPrice; // Harga beli rata-rata per saham
+    double averageBuyPrice;
 };
 
-// --- Struktur Data untuk Riwayat Transaksi ---
 struct Transaction {
-    std::string type; // "Beli" atau "Jual"
+    std::string type;
     std::string symbol;
     int quantity;
     double pricePerShare;
     double totalAmount;
-    int day; // Hari ke berapa transaksi terjadi
+    int day;
 };
 
-// --- Generator Angka Acak yang Lebih Baik ---
-std::mt19937 rng(static_cast<unsigned int>(std::time(0))); // Seed generator dengan waktu saat ini
+std::mt19937 rng(static_cast<unsigned int>(std::time(0)));
 
-// --- Fungsi untuk Membersihkan Buffer Input ---
 void clearInputBuffer() {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-// --- Fungsi untuk Mendapatkan Input Angka Integer yang Valid ---
 int getValidIntegerInput(const std::string& prompt, int minVal = 0, int maxVal = std::numeric_limits<int>::max()) {
     int value;
     while (true) {
@@ -55,7 +49,6 @@ int getValidIntegerInput(const std::string& prompt, int minVal = 0, int maxVal =
     }
 }
 
-// --- Fungsi untuk Mendapatkan Input Angka Double yang Valid ---
 double getValidDoubleInput(const std::string& prompt, double minVal = 0.0, double maxVal = std::numeric_limits<double>::max()) {
     double value;
     while (true) {
@@ -72,10 +65,9 @@ double getValidDoubleInput(const std::string& prompt, double minVal = 0.0, doubl
     }
 }
 
-// --- Fungsi untuk Menampilkan Daftar Saham yang Tersedia ---
 void displayMarket(const std::vector<CompanyStock>& stocks) {
     std::cout << "\n==========================================================" << std::endl;
-    std::cout << "                   PASAR SAHAM SAAT INI                   " << std::endl;
+    std::cout << "                     PASAR SAHAM SAAT INI                       " << std::endl;
     std::cout << "==========================================================" << std::endl;
     std::cout << std::left << std::setw(5) << "No."
               << std::left << std::setw(10) << "Symbol"
@@ -91,10 +83,9 @@ void displayMarket(const std::vector<CompanyStock>& stocks) {
     std::cout << "==========================================================\n" << std::endl;
 }
 
-// --- Fungsi untuk Menampilkan Portofolio Pemain ---
 void displayPortfolio(const std::vector<OwnedStock>& portfolio, const std::vector<CompanyStock>& marketStocks) {
     std::cout << "\n=====================================================================" << std::endl;
-    std::cout << "                          PORTOFOLIO ANDA                            " << std::endl;
+    std::cout << "                            PORTOFOLIO ANDA                           " << std::endl;
     std::cout << "=====================================================================" << std::endl;
     if (portfolio.empty()) {
         std::cout << "Anda belum memiliki saham apapun. Ayo mulai berinvestasi!" << std::endl;
@@ -108,7 +99,6 @@ void displayPortfolio(const std::vector<OwnedStock>& portfolio, const std::vecto
         std::cout << "---------------------------------------------------------------------" << std::endl;
         for (size_t i = 0; i < portfolio.size(); ++i) {
             double currentPrice = 0.0;
-            // Cari harga terkini dari saham di pasar
             for (const auto& ms : marketStocks) {
                 if (ms.symbol == portfolio[i].symbol) {
                     currentPrice = ms.currentPrice;
@@ -128,10 +118,9 @@ void displayPortfolio(const std::vector<OwnedStock>& portfolio, const std::vecto
     std::cout << "=====================================================================\n" << std::endl;
 }
 
-// --- Fungsi untuk Menampilkan Riwayat Transaksi ---
 void displayTransactionHistory(const std::vector<Transaction>& history) {
     std::cout << "\n==================================================================================" << std::endl;
-    std::cout << "                             RIWAYAT TRANSAKSI                                    " << std::endl;
+    std::cout << "                               RIWAYAT TRANSAKSI                                " << std::endl;
     std::cout << "==================================================================================" << std::endl;
     if (history.empty()) {
         std::cout << "Belum ada transaksi tercatat." << std::endl;
@@ -156,10 +145,8 @@ void displayTransactionHistory(const std::vector<Transaction>& history) {
 }
 
 
-// --- Fungsi Utama Program ---
 int main() {
-    // --- Data Awal ---
-    double playerCash = 10000000.00; // Modal awal pemain: Rp 10.000.000
+    double playerCash = 10000000.00;
     std::vector<CompanyStock> marketStocks = {
         {"TECH", "Teknologi Maju", 10000.00},
         {"FINA", "Keuangan Prima", 8000.00},
@@ -169,37 +156,32 @@ int main() {
     };
     std::vector<OwnedStock> playerPortfolio;
     std::vector<Transaction> transactionHistory;
-    int currentDay = 0; // Menghitung hari simulasi
+    int currentDay = 0;
 
-    // Untuk fluktuasi harga saham
-    std::uniform_real_distribution<> distrib(-0.05, 0.05); // Harga bisa naik/turun 5%
+    std::uniform_real_distribution<> distrib(-0.05, 0.05);
 
     int pilihan;
     char lanjutSimulasi;
 
-    // --- Sambutan Awal ---
     std::cout << "**********************************************************" << std::endl;
-    std::cout << "*   SELAMAT DATANG DI VIRTUAL STOCK MARKET SIMULATOR!    *" << std::endl;
-    std::cout << "*  Mulai petualangan investasimu tanpa risiko sungguhan. *" << std::endl;
+    std::cout << "* SELAMAT DATANG DI VIRTUAL STOCK MARKET SIMULATOR!    *" << std::endl;
+    std::cout << "* Mulai petualangan investasimu tanpa risiko sungguhan. *" << std::endl;
     std::cout << "**********************************************************" << std::endl;
 
     do {
         currentDay++;
         std::cout << "\n-----------------------------------------------------------" << std::endl;
-        std::cout << "                  HARI PERDAGANGAN KE-" << currentDay << std::endl;
+        std::cout << "                   HARI PERDAGANGAN KE-" << currentDay << std::endl;
         std::cout << "-----------------------------------------------------------" << std::endl;
 
-        // --- Fluktuasi Harga Saham ---
         for (auto& stock : marketStocks) {
-            double changePercentage = distrib(rng); // Acak perubahan harga
+            double changePercentage = distrib(rng);
             stock.currentPrice *= (1.0 + changePercentage);
-            // Batasi harga minimum agar tidak menjadi nol atau negatif
             if (stock.currentPrice < 100.00) {
-                stock.currentPrice = 100.00; // Harga minimum Rp 100
+                stock.currentPrice = 100.00;
             }
         }
 
-        // --- Tampilkan Ringkasan Keuangan ---
         double totalPortfolioValue = 0.0;
         for (const auto& owned : playerPortfolio) {
             for (const auto& market : marketStocks) {
@@ -229,11 +211,11 @@ int main() {
         pilihan = getValidIntegerInput("Pilih opsi (1-7): ", 1, 7);
 
         switch (pilihan) {
-            case 1: { // Lihat Pasar Saham
+            case 1: {
                 displayMarket(marketStocks);
                 break;
             }
-            case 2: { // Beli Saham
+            case 2: {
                 displayMarket(marketStocks);
                 int stockIndex = getValidIntegerInput("Masukkan nomor saham yang ingin Anda beli: ", 1, marketStocks.size());
                 CompanyStock& selectedStock = marketStocks[stockIndex - 1];
@@ -244,11 +226,9 @@ int main() {
                 if (playerCash >= cost) {
                     playerCash -= cost;
 
-                    // Update portfolio
                     bool found = false;
                     for (auto& owned : playerPortfolio) {
                         if (owned.symbol == selectedStock.symbol) {
-                            // Hitung harga beli rata-rata baru
                             owned.averageBuyPrice = ((owned.averageBuyPrice * owned.quantity) + cost) / (owned.quantity + quantity);
                             owned.quantity += quantity;
                             found = true;
@@ -259,7 +239,6 @@ int main() {
                         playerPortfolio.push_back({selectedStock.symbol, quantity, selectedStock.currentPrice});
                     }
 
-                    // Catat transaksi
                     transactionHistory.push_back({"Beli", selectedStock.symbol, quantity, selectedStock.currentPrice, cost, currentDay});
                     std::cout << "✅ Anda berhasil membeli " << quantity << " lembar saham " << selectedStock.symbol << "." << std::endl;
                 } else {
@@ -267,7 +246,7 @@ int main() {
                 }
                 break;
             }
-            case 3: { // Jual Saham
+            case 3: {
                 displayPortfolio(playerPortfolio, marketStocks);
                 if (playerPortfolio.empty()) {
                     std::cout << "Anda tidak memiliki saham untuk dijual." << std::endl;
@@ -291,31 +270,29 @@ int main() {
                 playerCash += proceeds;
                 ownedStock.quantity -= quantityToSell;
 
-                // Catat transaksi
                 transactionHistory.push_back({"Jual", ownedStock.symbol, quantityToSell, currentStockPrice, proceeds, currentDay});
                 std::cout << "✅ Anda berhasil menjual " << quantityToSell << " lembar saham " << ownedStock.symbol << " seharga Rp " << std::fixed << std::setprecision(2) << proceeds << "." << std::endl;
 
-                // Hapus saham dari portofolio jika kuantitasnya 0
                 playerPortfolio.erase(std::remove_if(playerPortfolio.begin(), playerPortfolio.end(),
                                                      [](const OwnedStock& s){ return s.quantity == 0; }),
-                                      playerPortfolio.end());
+                                     playerPortfolio.end());
                 break;
             }
-            case 4: { // Lihat Portofolio
+            case 4: {
                 displayPortfolio(playerPortfolio, marketStocks);
                 break;
             }
-            case 5: { // Lihat Riwayat Transaksi
+            case 5: {
                 displayTransactionHistory(transactionHistory);
                 break;
             }
-            case 6: { // Lanjutkan ke Hari Berikutnya
+            case 6: {
                 std::cout << "\nMelanjutkan ke hari perdagangan berikutnya..." << std::endl;
-                lanjutSimulasi = 'Y'; // Set agar loop utama berjalan lagi
+                lanjutSimulasi = 'Y';
                 break;
             }
-            case 7: { // Keluar
-                lanjutSimulasi = 'N'; // Set agar loop utama berhenti
+            case 7: {
+                lanjutSimulasi = 'N';
                 std::cout << "\n***********************************************************" << std::endl;
                 std::cout << "* TERIMA KASIH TELAH BERMAIN VIRTUAL STOCK MARKET!        *" << std::endl;
                 std::cout << "* Kekayaan Akhir Anda: Rp " << std::fixed << std::setprecision(2) << netWorth << " *" << std::endl;
@@ -324,7 +301,6 @@ int main() {
             }
         }
 
-        // Jika bukan opsi Lanjutkan Hari atau Keluar, tanyakan ingin lanjut atau tidak
         if (pilihan != 6 && pilihan != 7) {
             std::cout << "\nLanjutkan ke hari berikutnya atau lakukan aksi lain? (Y/N): ";
             std::cin >> lanjutSimulasi;

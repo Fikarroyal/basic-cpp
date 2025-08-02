@@ -1,21 +1,19 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <iomanip> // Untuk setprecision, fixed, setw, left/right
-#include <limits>  // Untuk numeric_limits
+#include <iomanip>
+#include <limits>
 
-// --- Struktur Data Buku ---
 struct Buku {
     std::string judul;
     std::string penulis;
-    std::string isbn; // International Standard Book Number
-    bool isTersedia; // true jika tersedia, false jika sedang dipinjam
+    std::string isbn;
+    bool isTersedia;
 };
 
-// --- Fungsi untuk Menampilkan Daftar Buku ---
 void tampilkanDaftarBuku(const std::vector<Buku>& daftar) {
     std::cout << "\n========================================================" << std::endl;
-    std::cout << "                 DAFTAR BUKU PERPUSTAKAAN               " << std::endl;
+    std::cout << "               DAFTAR BUKU PERPUSTAKAAN              " << std::endl;
     std::cout << "========================================================\n" << std::endl;
     std::cout << std::left << std::setw(4) << "No."
               << std::left << std::setw(25) << "Judul Buku"
@@ -31,9 +29,7 @@ void tampilkanDaftarBuku(const std::vector<Buku>& daftar) {
     std::cout << "========================================================\n" << std::endl;
 }
 
-// --- Fungsi Utama Program ---
 int main() {
-    // Inisialisasi daftar buku (15 buku)
     std::vector<Buku> daftarBuku = {
         {"Filosofi Teras", "Henry Manampiring", "978-602-03-3453-3", true},
         {"Atomic Habits", "James Clear", "978-602-06-3312-3", true},
@@ -55,10 +51,9 @@ int main() {
     int pilihan;
     char lanjutAplikasi;
 
-    // --- Sambutan Awal ---
     std::cout << "*****************************************************" << std::endl;
-    std::cout << "*    SELAMAT DATANG DI PERPUSTAKAAN DIGITAL KAMI!   *" << std::endl;
-    std::cout << "*      Baca, Belajar, Berkembang Bersama Kami!      *" << std::endl;
+    std::cout << "* SELAMAT DATANG DI PERPUSTAKAAN DIGITAL KAMI!    *" << std::endl;
+    std::cout << "* Baca, Belajar, Berkembang Bersama Kami!       *" << std::endl;
     std::cout << "*****************************************************" << std::endl;
 
     do {
@@ -70,22 +65,21 @@ int main() {
         std::cout << "Pilih opsi (1-4): ";
         std::cin >> pilihan;
 
-        // Validasi input menu utama
         if (std::cin.fail() || pilihan < 1 || pilihan > 4) {
             std::cout << "Pilihan tidak valid. Mohon masukkan angka 1-4." << std::endl;
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            lanjutAplikasi = 'Y'; // Agar loop berulang
+            lanjutAplikasi = 'Y';
             continue;
         }
 
         switch (pilihan) {
-            case 1: { // Lihat Daftar Buku
+            case 1: {
                 tampilkanDaftarBuku(daftarBuku);
                 break;
             }
-            case 2: { // Pinjam Buku
-                tampilkanDaftarBuku(daftarBuku); // Tampilkan lagi daftar untuk memudahkan pemilihan
+            case 2: {
+                tampilkanDaftarBuku(daftarBuku);
                 int pilihanBukuPinjam;
 
                 do {
@@ -97,14 +91,14 @@ int main() {
                         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     } else if (!daftarBuku[pilihanBukuPinjam - 1].isTersedia) {
                         std::cout << "Maaf, buku '" << daftarBuku[pilihanBukuPinjam - 1].judul << "' sedang tidak tersedia (sedang dipinjam)." << std::endl;
-                        pilihanBukuPinjam = 0; // Agar loop berulang
+                        pilihanBukuPinjam = 0;
                     }
                 } while (pilihanBukuPinjam < 1 || pilihanBukuPinjam > daftarBuku.size() || !daftarBuku[pilihanBukuPinjam - 1].isTersedia);
 
-                Buku& bukuDipinjam = daftarBuku[pilihanBukuPinjam - 1]; // Gunakan referensi
+                Buku& bukuDipinjam = daftarBuku[pilihanBukuPinjam - 1];
 
                 std::cout << "\n==========================================" << std::endl;
-                std::cout << "         KONFIRMASI PEMINJAMAN BUKU       " << std::endl;
+                std::cout << "          KONFIRMASI PEMINJAMAN BUKU        " << std::endl;
                 std::cout << "==========================================" << std::endl;
                 std::cout << "  Judul Buku    : " << bukuDipinjam.judul << std::endl;
                 std::cout << "  Penulis       : " << bukuDipinjam.penulis << std::endl;
@@ -117,19 +111,19 @@ int main() {
                 std::cout << "\nKonfirmasi peminjaman buku ini? (Y/N): ";
                 std::cin >> konfirmasiPinjam;
                 if (konfirmasiPinjam == 'Y' || konfirmasiPinjam == 'y') {
-                    bukuDipinjam.isTersedia = false; // Set status buku menjadi dipinjam
+                    bukuDipinjam.isTersedia = false;
                     std::cout << "\n📚 **Peminjaman Berhasil!** Buku '" << bukuDipinjam.judul << "' telah berhasil Anda pinjam." << std::endl;
                     std::cout << "Selamat membaca! Jangan lupa dikembalikan tepat waktu ya! 😊" << std::endl;
                 } else {
                     std::cout << "\nPeminjaman dibatalkan. Sampai jumpa lagi! 👋" << std::endl;
                 }
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Bersihkan buffer
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 break;
             }
-            case 3: { // Kembalikan Buku
+            case 3: {
                 bool adaBukuDipinjam = false;
                 for (const auto& b : daftarBuku) {
-                    if (!b.isTersedia) { // Jika statusnya tidak tersedia (berarti dipinjam)
+                    if (!b.isTersedia) {
                         adaBukuDipinjam = true;
                         break;
                     }
@@ -141,7 +135,7 @@ int main() {
                 }
 
                 std::cout << "\n==========================================" << std::endl;
-                std::cout << "         DAFTAR BUKU SEDANG DIPINJAM      " << std::endl;
+                std::cout << "          DAFTAR BUKU SEDANG DIPINJAM      " << std::endl;
                 std::cout << "==========================================" << std::endl;
                 int counter = 1;
                 for (size_t i = 0; i < daftarBuku.size(); ++i) {
@@ -164,11 +158,10 @@ int main() {
                         continue;
                     }
 
-                    // Cari buku berdasarkan urutan yang ditampilkan (yang sedang dipinjam)
                     int originalIndex = -1;
                     int currentCount = 0;
                     for (size_t i = 0; i < daftarBuku.size(); ++i) {
-                        if (!daftarBuku[i].isTersedia) { // Hanya hitung yang sedang dipinjam
+                        if (!daftarBuku[i].isTersedia) {
                             currentCount++;
                             if (currentCount == pilihanBukuKembali) {
                                 originalIndex = i;
@@ -178,23 +171,23 @@ int main() {
                     }
 
                     if (originalIndex != -1) {
-                         Buku& bukuDikembalikan = daftarBuku[originalIndex];
-                         if (!bukuDikembalikan.isTersedia) { // Pastikan memang sedang dipinjam
-                            bukuDikembalikan.isTersedia = true; // Ubah status menjadi tersedia
+                        Buku& bukuDikembalikan = daftarBuku[originalIndex];
+                        if (!bukuDikembalikan.isTersedia) {
+                            bukuDikembalikan.isTersedia = true;
                             std::cout << "\n👍 Buku '" << bukuDikembalikan.judul << "' telah berhasil dikembalikan." << std::endl;
                             std::cout << "Terima kasih telah membaca! 📖" << std::endl;
                             inputValid = true;
-                         } else {
+                        } else {
                             std::cout << "Kesalahan: Buku ini tidak dalam status dipinjam." << std::endl;
-                         }
+                        }
                     } else {
                         std::cout << "Nomor buku tidak ditemukan dalam daftar buku yang sedang dipinjam." << std::endl;
                     }
                 } while (!inputValid);
-                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Bersihkan buffer
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 break;
             }
-            case 4: { // Keluar
+            case 4: {
                 std::cout << "\nTerima kasih telah menggunakan layanan Perpustakaan Digital kami. Sampai jumpa! 👋" << std::endl;
                 break;
             }
@@ -203,14 +196,14 @@ int main() {
         if (pilihan != 4) {
             std::cout << "\nKembali ke Menu Utama Perpustakaan? (Y/N): ";
             std::cin >> lanjutAplikasi;
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Bersihkan buffer
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         } else {
-            lanjutAplikasi = 'N'; // Keluar dari loop jika pilihan adalah 4
+            lanjutAplikasi = 'N';
         }
     } while (lanjutAplikasi == 'Y' || lanjutAplikasi == 'y');
 
     std::cout << "\nTekan Enter untuk keluar...";
-    std::cin.get(); // Menunggu user menekan enter
+    std::cin.get();
 
     return 0;
 }

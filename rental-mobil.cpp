@@ -1,19 +1,17 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <iomanip> // Untuk setprecision, fixed, setw, left/right
-#include <limits>  // Untuk numeric_limits
+#include <iomanip> 
+#include <limits>  
 
-// --- Struktur Data Mobil ---
 struct Mobil {
     std::string merk;
     std::string model;
     std::string platNomor;
     double hargaSewaPerHari;
-    bool isTersedia; // true jika tersedia, false jika sedang disewa
+    bool isTersedia;
 };
 
-// --- Fungsi untuk Menampilkan Daftar Mobil ---
 void tampilkanDaftarMobil(const std::vector<Mobil>& daftar) {
     std::cout << "\n========================================================" << std::endl;
     std::cout << "                 DAFTAR MOBIL RENTAL                    " << std::endl;
@@ -33,10 +31,7 @@ void tampilkanDaftarMobil(const std::vector<Mobil>& daftar) {
     }
     std::cout << "========================================================\n" << std::endl;
 }
-
-// --- Fungsi Utama Program ---
 int main() {
-    // Inisialisasi daftar mobil (15 mobil)
     std::vector<Mobil> daftarMobil = {
         {"Toyota", "Avanza", "B 1234 CD", 300000.00, true},
         {"Daihatsu", "Xenia", "B 5678 EF", 300000.00, true},
@@ -58,7 +53,6 @@ int main() {
     int pilihan;
     char lanjutAplikasi;
 
-    // --- Sambutan Awal ---
     std::cout << "*****************************************************" << std::endl;
     std::cout << "*   SELAMAT DATANG DI LAYANAN RENTAL MOBIL KAMI!  *" << std::endl;
     std::cout << "*       Nikmati perjalanan Anda dengan kami!      *" << std::endl;
@@ -73,22 +67,21 @@ int main() {
         std::cout << "Pilih opsi (1-4): ";
         std::cin >> pilihan;
 
-        // Validasi input menu utama
         if (std::cin.fail() || pilihan < 1 || pilihan > 4) {
             std::cout << "Pilihan tidak valid. Mohon masukkan angka 1-4." << std::endl;
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            lanjutAplikasi = 'Y'; // Agar loop berulang
+            lanjutAplikasi = 'Y';
             continue;
         }
 
         switch (pilihan) {
-            case 1: { // Lihat Daftar Mobil
+            case 1: {
                 tampilkanDaftarMobil(daftarMobil);
                 break;
             }
-            case 2: { // Sewa Mobil
-                tampilkanDaftarMobil(daftarMobil); // Tampilkan lagi daftar untuk memudahkan pemilihan
+            case 2: {
+                tampilkanDaftarMobil(daftarMobil);
                 int pilihanMobilSewa;
                 int durasiSewaHari;
 
@@ -101,7 +94,7 @@ int main() {
                         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     } else if (!daftarMobil[pilihanMobilSewa - 1].isTersedia) {
                         std::cout << "Maaf, mobil ini sedang tidak tersedia (sedang disewa). Pilih yang lain." << std::endl;
-                        pilihanMobilSewa = 0; // Agar loop berulang
+                        pilihanMobilSewa = 0;
                     }
                 } while (pilihanMobilSewa < 1 || pilihanMobilSewa > daftarMobil.size() || !daftarMobil[pilihanMobilSewa - 1].isTersedia);
 
@@ -115,7 +108,7 @@ int main() {
                     }
                 } while (durasiSewaHari <= 0);
 
-                Mobil& mobilDisewa = daftarMobil[pilihanMobilSewa - 1]; // Gunakan referensi
+                Mobil& mobilDisewa = daftarMobil[pilihanMobilSewa - 1];
                 double totalBiayaSewa = mobilDisewa.hargaSewaPerHari * durasiSewaHari;
 
                 std::cout << "\n==========================================" << std::endl;
@@ -132,16 +125,16 @@ int main() {
                 std::cout << "\nKonfirmasi sewa mobil ini? (Y/N): ";
                 std::cin >> konfirmasiSewa;
                 if (konfirmasiSewa == 'Y' || konfirmasiSewa == 'y') {
-                    mobilDisewa.isTersedia = false; // Set status mobil menjadi disewa
+                    mobilDisewa.isTersedia = false;
                     std::cout << "\n🎉 **Sewa Berhasil!** Mobil " << mobilDisewa.merk << " " << mobilDisewa.model << " (" << mobilDisewa.platNomor << ") telah berhasil Anda sewa." << std::endl;
                     std::cout << "Selamat menikmati perjalanan Anda! 🚗💨" << std::endl;
                 } else {
                     std::cout << "\nPenyewaan dibatalkan. Sampai jumpa lagi! 👋" << std::endl;
                 }
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Bersihkan buffer
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 break;
             }
-            case 3: { // Kembalikan Mobil
+            case 3: {
                 bool adaMobilDisewa = false;
                 for (const auto& m : daftarMobil) {
                     if (!m.isTersedia) {
@@ -179,7 +172,6 @@ int main() {
                         continue;
                     }
 
-                    // Cari mobil berdasarkan urutan yang ditampilkan
                     int originalIndex = -1;
                     int currentCount = 0;
                     for (size_t i = 0; i < daftarMobil.size(); ++i) {
@@ -195,22 +187,21 @@ int main() {
                     if (originalIndex != -1) {
                          Mobil& mobilDikembalikan = daftarMobil[originalIndex];
                          if (!mobilDikembalikan.isTersedia) {
-                            mobilDikembalikan.isTersedia = true; // Ubah status menjadi tersedia
+                            mobilDikembalikan.isTersedia = true;
                             std::cout << "\n👍 Mobil " << mobilDikembalikan.merk << " " << mobilDikembalikan.model << " (" << mobilDikembalikan.platNomor << ") telah berhasil dikembalikan." << std::endl;
                             std::cout << "Terima kasih telah menggunakan layanan kami! 😊" << std::endl;
                             inputValid = true;
                          } else {
                             std::cout << "Kesalahan: Mobil ini tidak dalam status disewa." << std::endl;
-                            // Set inputValid to false to loop again if somehow this happens
                          }
                     } else {
                         std::cout << "Nomor mobil tidak ditemukan dalam daftar mobil yang sedang disewa." << std::endl;
                     }
                 } while (!inputValid);
-                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Bersihkan buffer
+                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 break;
             }
-            case 4: { // Keluar
+            case 4: {
                 std::cout << "\nTerima kasih telah menggunakan layanan Rental Mobil kami. Sampai jumpa! 👋" << std::endl;
                 break;
             }
@@ -219,14 +210,14 @@ int main() {
         if (pilihan != 4) {
             std::cout << "\nKembali ke Menu Utama? (Y/N): ";
             std::cin >> lanjutAplikasi;
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Bersihkan buffer
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         } else {
-            lanjutAplikasi = 'N'; // Keluar dari loop jika pilihan adalah 4
+            lanjutAplikasi = 'N';
         }
     } while (lanjutAplikasi == 'Y' || lanjutAplikasi == 'y');
 
     std::cout << "\nTekan Enter untuk keluar...";
-    std::cin.get(); // Menunggu user menekan enter
+    std::cin.get();
 
     return 0;
 }

@@ -1,37 +1,37 @@
-#include <iostream>   // Untuk input/output konsol (std::cout, std::cin, std::endl)
-#include <vector>     // Untuk menggunakan std::vector (array dinamis)
-#include <string>     // Untuk menggunakan std::string dan fungsi-fungsi string (std::getline)
-#include <fstream>    // Untuk operasi file input/output (std::ofstream, std::ifstream)
-#include <sstream>    // Untuk stringstream (parsing string menjadi angka atau sebaliknya)
-#include <chrono>     // Untuk manipulasi waktu dan tanggal (std::chrono::system_clock, std::time_t)
-#include <iomanip>    // Untuk manipulasi format output (std::put_time, std::setw, std::fixed, std::setprecision)
-#include <algorithm>  // Untuk algoritma seperti std::transform, std::sort, std::remove_if
-#include <limits>     // Untuk std::numeric_limits (digunakan untuk membersihkan buffer input)
-#include <map>        // Untuk menggunakan std::map (struktur data key-value pair)
-#include <utility>    // Untuk std::pair, meskipun sering sudah diinclude oleh header lain, lebih baik eksplisit
+#include <iostream>
+#include <vector>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <chrono>
+#include <iomanip>
+#include <algorithm>
+#include <limits>
+#include <map>
+#include <utility>
 
 struct VegetableType {
-    int id;                 // ID unik untuk jenis sayuran (otomatis generated)
-    std::string name;       // Nama sayuran (contoh: "Bayam", "Tomat Cherry")
-    int grow_duration_days; // Perkiraan durasi tumbuh dari tanam hingga siap panen (dalam hari)
+    int id;
+    std::string name;
+    int grow_duration_days;
 };
 
 struct PlantingBatch {
-    int id;                     // ID unik untuk batch penanaman ini
-    int veggie_type_id;         // ID dari jenis sayuran yang ditanam (merujuk ke VegetableType)
-    std::string plant_date;     // Tanggal saat penanaman dilakukan (format YYYY-MM-DD)
-    std::string harvest_date_est; // Perkiraan tanggal kapan sayuran ini siap dipanen (YYYY-MM-DD)
-    double harvested_quantity;  // Kuantitas aktual yang dipanen dari batch ini (misal: dalam kg atau ikat). Default 0 jika belum panen.
-    bool is_harvested;          // Status panen: true jika sudah dipanen, false jika masih tumbuh.
+    int id;
+    int veggie_type_id;
+    std::string plant_date;
+    std::string harvest_date_est;
+    double harvested_quantity;
+    bool is_harvested;
 };
 
 struct SaleTransaction {
-    int id;                 // ID unik untuk transaksi penjualan ini
-    std::string veggie_name; // Nama sayuran yang terjual (untuk riwayat, bukan ID)
-    std::string sale_date;   // Tanggal transaksi penjualan (YYYY-MM-DD)
-    double quantity_sold;    // Jumlah sayuran yang terjual (misal: dalam kg atau ikat)
-    double price_per_unit;   // Harga jual per unit (misal: harga per kg atau per ikat)
-    double total_price;      // Total harga untuk transaksi ini (quantity_sold * price_per_unit)
+    int id;
+    std::string veggie_name;
+    std::string sale_date;
+    double quantity_sold;
+    double price_per_unit;
+    double total_price;
 };
 
 std::vector<VegetableType> veggieTypes;
@@ -55,10 +55,10 @@ int getValidIntegerInput(const std::string& prompt, int minVal = 0, int maxVal =
         std::cin >> value;
         if (std::cin.fail() || value < minVal || value > maxVal) {
             std::cout << "Input tidak valid. Mohon masukkan angka bulat antara " << minVal << " dan " << maxVal << "." << std::endl;
-            std::cin.clear();        // Bersihkan flag error pada std::cin
-            clearInputBuffer();      // Bersihkan sisa input di buffer
+            std::cin.clear();
+            clearInputBuffer();
         } else {
-            clearInputBuffer();      // Bersihkan sisa newline di buffer
+            clearInputBuffer();
             return value;
         }
     }
@@ -93,76 +93,74 @@ std::string getNonEmptyStringInput(const std::string& prompt) {
     }
 }
 std::string getCurrentDate() {
-    auto now = std::chrono::system_clock::now(); // Dapatkan waktu saat ini
-    std::time_t currentTime = std::chrono::system_clock::to_time_t(now); // Konversi ke time_t
-    std::stringstream ss; // Gunakan stringstream untuk memformat tanggal
-    ss << std::put_time(std::localtime(&currentTime), "%Y-%m-%d"); // Format ke YYYY-MM-DD
-    return ss.str(); // Kembalikan sebagai string
+    auto now = std::chrono::system_clock::now();
+    std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&currentTime), "%Y-%m-%d");
+    return ss.str();
 }
 
 std::string addDaysToDate(const std::string& date_str, int days) {
-    std::tm tm = {}; // Struktur tm untuk menyimpan komponen waktu
-    std::istringstream ss(date_str); // Gunakan stringstream untuk parsing string tanggal
-    ss >> std::get_time(&tm, "%Y-%m-%d"); // Parsing string tanggal ke struktur tm
+    std::tm tm = {};
+    std::istringstream ss(date_str);
+    ss >> std::get_time(&tm, "%Y-%m-%d");
     
-    std::time_t time = std::mktime(&tm); // Konversi struktur tm ke time_t (detik sejak epoch)
-    time += days * 24 * 60 * 60; // Tambahkan jumlah detik yang setara dengan 'days'
+    std::time_t time = std::mktime(&tm);
+    time += days * 24 * 60 * 60;
     
-    std::tm* new_tm = std::localtime(&time); // Konversi kembali time_t ke struktur tm (waktu lokal)
-    std::stringstream new_ss; // Stringstream baru untuk memformat tanggal hasil
-    new_ss << std::put_time(new_tm, "%Y-%m-%d"); // Format kembali ke YYYY-MM-DD
-    return new_ss.str(); // Kembalikan string tanggal baru
+    std::tm* new_tm = std::localtime(&time);
+    std::stringstream new_ss;
+    new_ss << std::put_time(new_tm, "%Y-%m-%d");
+    return new_ss.str();
 }
 
 std::string toLower(std::string s) {
-    std::transform(s.begin(), s.end(), s.begin(), ::tolower); // Menggunakan std::transform dan ::tolower
+    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
     return s;
 }
 std::vector<std::string> splitString(const std::string& s, const std::string& delimiter) {
     std::vector<std::string> tokens;
     size_t prev = 0, pos = 0;
     do {
-        pos = s.find(delimiter, prev); // Cari posisi delimiter
-        tokens.push_back(s.substr(prev, pos - prev)); // Ambil substring sebagai token
-        prev = pos + delimiter.length(); // Pindahkan posisi awal untuk pencarian berikutnya
-    } while (pos != std::string::npos); // Ulangi selama delimiter ditemukan
+        pos = s.find(delimiter, prev);
+        tokens.push_back(s.substr(prev, pos - prev));
+        prev = pos + delimiter.length();
+    } while (pos != std::string::npos);
     return tokens;
 }
 void saveData() {
-    std::ofstream outFile(DATA_FILE); // Buka file dalam mode tulis (akan membuat/menimpa jika sudah ada)
-    if (!outFile.is_open()) { // Cek apakah file berhasil dibuka
+    std::ofstream outFile(DATA_FILE);
+    if (!outFile.is_open()) {
         std::cerr << "ERROR: Gagal membuka file untuk menyimpan data." << std::endl;
         return;
     }
     outFile << nextVeggieTypeId << "\n";
     outFile << nextPlantingBatchId << "\n";
     outFile << nextSaleTransactionId << "\n";
-    outFile << "VEGETABLE_TYPES\n"; // Header seksi
+    outFile << "VEGETABLE_TYPES\n";
     for (const auto& vt : veggieTypes) {
         outFile << vt.id << "|||" << vt.name << "|||" << vt.grow_duration_days << "\n";
     }
 
-    // Simpan data PlantingBatches
-    outFile << "PLANTING_BATCHES\n"; // Header seksi
+    outFile << "PLANTING_BATCHES\n";
     for (const auto& pb : plantingBatches) {
         outFile << pb.id << "|||" << pb.veggie_type_id << "|||" << pb.plant_date << "|||"
                 << pb.harvest_date_est << "|||" << pb.harvested_quantity << "|||" << (pb.is_harvested ? "1" : "0") << "\n";
     }
 
-    // Simpan data SaleTransactions
-    outFile << "SALE_TRANSACTIONS\n"; // Header seksi
+    outFile << "SALE_TRANSACTIONS\n";
     for (const auto& st : salesTransactions) {
         outFile << st.id << "|||" << st.veggie_name << "|||" << st.sale_date << "|||"
                 << st.quantity_sold << "|||" << st.price_per_unit << "|||" << st.total_price << "\n";
     }
 
-    outFile.close(); // Tutup file
+    outFile.close();
     std::cout << "[INFO] Data pertanian berhasil disimpan." << std::endl;
 }
 
 void loadData() {
-    std::ifstream inFile(DATA_FILE); // Buka file dalam mode baca
-    if (!inFile.is_open()) { // Jika file tidak ditemukan, informasikan dan lanjutkan dengan data kosong
+    std::ifstream inFile(DATA_FILE);
+    if (!inFile.is_open()) {
         std::cout << "[INFO] File data pertanian tidak ditemukan. Membuat data baru." << std::endl;
         return;
     }
@@ -175,11 +173,11 @@ void loadData() {
     plantingBatches.clear();
     salesTransactions.clear();
     if (std::getline(inFile, line) && line == "VEGETABLE_TYPES") {
-        while (std::getline(inFile, line) && line != "PLANTING_BATCHES") { // Baca hingga menemukan header seksi berikutnya
-            std::vector<std::string> segments = splitString(line, "|||"); // Pisahkan baris berdasarkan delimiter
-            if (segments.size() == 3) { // Pastikan jumlah segmen benar
+        while (std::getline(inFile, line) && line != "PLANTING_BATCHES") {
+            std::vector<std::string> segments = splitString(line, "|||");
+            if (segments.size() == 3) {
                 VegetableType vt;
-                try { // Gunakan try-catch untuk menangani kemungkinan error konversi string ke angka
+                try {
                     vt.id = std::stoi(segments[0]);
                     vt.name = segments[1];
                     vt.grow_duration_days = std::stoi(segments[2]);
@@ -191,7 +189,7 @@ void loadData() {
         }
     }
 
-    if (line == "PLANTING_BATCHES") { // Cek apakah loop di atas berhenti karena menemukan header ini
+    if (line == "PLANTING_BATCHES") {
         while (std::getline(inFile, line) && line != "SALE_TRANSACTIONS") {
             std::vector<std::string> segments = splitString(line, "|||");
             if (segments.size() == 6) {
@@ -201,8 +199,8 @@ void loadData() {
                     pb.veggie_type_id = std::stoi(segments[1]);
                     pb.plant_date = segments[2];
                     pb.harvest_date_est = segments[3];
-                    pb.harvested_quantity = std::stod(segments[4]); // string to double
-                    pb.is_harvested = (segments[5] == "1"); // "1" berarti true, "0" berarti false
+                    pb.harvested_quantity = std::stod(segments[4]);
+                    pb.is_harvested = (segments[5] == "1");
                     plantingBatches.push_back(pb);
                 } catch (const std::exception& e) {
                     std::cerr << "Peringatan: Baris PlantingBatch korup dilewati. Error: " << e.what() << std::endl;
@@ -211,8 +209,8 @@ void loadData() {
         }
     }
 
-    if (line == "SALE_TRANSACTIONS") { // Cek apakah loop di atas berhenti karena menemukan header ini
-        while (std::getline(inFile, line)) { // Baca hingga akhir file
+    if (line == "SALE_TRANSACTIONS") {
+        while (std::getline(inFile, line)) {
             std::vector<std::string> segments = splitString(line, "|||");
             if (segments.size() == 6) {
                 SaleTransaction st;
@@ -231,7 +229,7 @@ void loadData() {
         }
     }
 
-    inFile.close(); // Tutup file
+    inFile.close();
     std::cout << "[INFO] Data pertanian berhasil dimuat." << std::endl;
 }
 
@@ -239,7 +237,6 @@ void addVegetableType() {
     std::cout << "\n--- Tambah Jenis Sayuran Baru ---" << std::endl;
     std::string name = getNonEmptyStringInput("Masukkan nama sayuran (contoh: Bayam, Tomat): ");
     
-    // Konversi nama input ke lowercase untuk cek duplikasi yang tidak sensitif huruf besar/kecil
     std::string lowerName = toLower(name);
     for (const auto& vt : veggieTypes) {
         if (toLower(vt.name) == lowerName) {
@@ -250,13 +247,12 @@ void addVegetableType() {
 
     int duration = getValidIntegerInput("Masukkan perkiraan durasi tanam hingga panen (dalam hari): ", 1);
 
-    VegetableType newType = {nextVeggieTypeId++, name, duration}; // Buat objek baru dengan ID unik
-    veggieTypes.push_back(newType); // Tambahkan ke vektor
+    VegetableType newType = {nextVeggieTypeId++, name, duration};
+    veggieTypes.push_back(newType);
     std::cout << "[✅] Jenis sayuran '" << name << "' berhasil ditambahkan." << std::endl;
-    saveData(); // Simpan perubahan ke file
+    saveData();
 }
 
-// Menampilkan daftar semua jenis sayuran yang terdaftar dalam format tabel yang rapi.
 void viewVegetableTypes() {
     std::cout << "\n==========================================================" << std::endl;
     std::cout << "                  DAFTAR JENIS SAYURAN                    " << std::endl;
@@ -264,7 +260,6 @@ void viewVegetableTypes() {
     if (veggieTypes.empty()) {
         std::cout << "Belum ada jenis sayuran yang terdaftar." << std::endl;
     } else {
-        // Atur lebar kolom untuk tampilan tabel yang rapi
         std::cout << std::left << std::setw(5) << "ID"
                   << std::left << std::setw(30) << "Nama Sayuran"
                   << std::left << std::setw(20) << "Durasi Panen (Hari)" << std::endl;
@@ -278,21 +273,20 @@ void viewVegetableTypes() {
     std::cout << "==========================================================\n" << std::endl;
 }
 
-// Mengedit detail jenis sayuran berdasarkan ID. Memungkinkan perubahan nama dan durasi panen.
 void editVegetableType() {
-    viewVegetableTypes(); // Tampilkan daftar untuk memudahkan pemilihan ID
-    if (veggieTypes.empty()) return; // Jika kosong, tidak ada yang bisa diedit
+    viewVegetableTypes();
+    if (veggieTypes.empty()) return;
 
     int idToEdit = getValidIntegerInput("Masukkan ID jenis sayuran yang ingin diedit: ");
-    VegetableType* targetType = nullptr; // Pointer untuk menyimpan alamat objek yang akan diedit
-    for (auto& vt : veggieTypes) { // Iterasi untuk menemukan jenis sayuran berdasarkan ID
+    VegetableType* targetType = nullptr;
+    for (auto& vt : veggieTypes) {
         if (vt.id == idToEdit) {
             targetType = &vt;
             break;
         }
     }
 
-    if (!targetType) { // Jika ID tidak ditemukan
+    if (!targetType) {
         std::cout << "[!] Jenis sayuran dengan ID " << idToEdit << " tidak ditemukan." << std::endl;
         return;
     }
@@ -301,7 +295,6 @@ void editVegetableType() {
     std::cout << "Nama saat ini: " << targetType->name << std::endl;
     std::string newName = getNonEmptyStringInput("Masukkan nama baru (biarkan kosong untuk tidak mengubah): ");
     if (!newName.empty() && toLower(newName) != toLower(targetType->name)) {
-        // Cek duplikasi nama baru, kecuali jika itu adalah nama dari objek yang sedang diedit
         bool duplicate = false;
         std::string lowerNewName = toLower(newName);
         for (const auto& vt : veggieTypes) {
@@ -326,7 +319,7 @@ void editVegetableType() {
     }
 
     std::cout << "[✅] Jenis sayuran ID " << idToEdit << " berhasil diperbarui." << std::endl;
-    saveData(); // Simpan perubahan
+    saveData();
 }
 
 void deleteVegetableType() {
@@ -335,7 +328,6 @@ void deleteVegetableType() {
 
     int idToDelete = getValidIntegerInput("Masukkan ID jenis sayuran yang ingin dihapus: ");
 
-    // Cek apakah ada penanaman yang masih menggunakan jenis sayuran ini
     for (const auto& pb : plantingBatches) {
         if (pb.veggie_type_id == idToDelete) {
             std::cout << "[!] Tidak bisa menghapus jenis sayuran ini karena masih ada penanaman yang terkait (ID Penanaman: " << pb.id << ")." << std::endl;
@@ -349,17 +341,17 @@ void deleteVegetableType() {
                                  return vt.id == idToDelete;
                              });
     
-    if (it != veggieTypes.end()) { // Jika elemen ditemukan dan dihapus
+    if (it != veggieTypes.end()) {
         veggieTypes.erase(it, veggieTypes.end());
         std::cout << "[✅] Jenis sayuran ID " << idToDelete << " berhasil dihapus." << std::endl;
-        saveData(); // Simpan perubahan
+        saveData();
     } else {
         std::cout << "[!] Jenis sayuran dengan ID " << idToDelete << " tidak ditemukan." << std::endl;
     }
 }
 
 void addPlantingBatch() {
-    viewVegetableTypes(); // Tampilkan jenis sayuran yang ada
+    viewVegetableTypes();
     if (veggieTypes.empty()) {
         std::cout << "Anda harus menambahkan jenis sayuran terlebih dahulu sebelum mencatat penanaman." << std::endl;
         return;
@@ -374,23 +366,22 @@ void addPlantingBatch() {
         }
     }
 
-    if (!selectedType) { // Jika jenis sayuran tidak ditemukan
+    if (!selectedType) {
         std::cout << "[!] Jenis sayuran dengan ID " << veggieTypeId << " tidak ditemukan." << std::endl;
         return;
     }
 
-    std::string plantDate = getCurrentDate(); // Tanggal tanam otomatis adalah tanggal saat ini
-    std::string harvestDateEst = addDaysToDate(plantDate, selectedType->grow_duration_days); // Hitung estimasi panen
+    std::string plantDate = getCurrentDate();
+    std::string harvestDateEst = addDaysToDate(plantDate, selectedType->grow_duration_days);
 
     PlantingBatch newBatch = {nextPlantingBatchId++, selectedType->id, plantDate, harvestDateEst, 0.0, false};
     plantingBatches.push_back(newBatch);
     std::cout << "\n[✅] Penanaman " << selectedType->name << " berhasil dicatat." << std::endl;
     std::cout << "   Tanggal Tanam: " << newBatch.plant_date << std::endl;
     std::cout << "   Estimasi Panen: " << newBatch.harvest_date_est << std::endl;
-    saveData(); // Simpan perubahan
+    saveData();
 }
 
-// Menampilkan semua batch penanaman yang dicatat, beserta status panennya.
 void viewPlantingBatches() {
     std::cout << "\n==========================================================" << std::endl;
     std::cout << "                   DAFTAR PENANAMAN                       " << std::endl;
@@ -398,7 +389,6 @@ void viewPlantingBatches() {
     if (plantingBatches.empty()) {
         std::cout << "Belum ada penanaman yang dicatat." << std::endl;
     } else {
-        // Atur lebar kolom untuk tampilan tabel
         std::cout << std::left << std::setw(5) << "ID"
                   << std::left << std::setw(20) << "Sayuran"
                   << std::left << std::setw(15) << "Tanam"
@@ -407,8 +397,8 @@ void viewPlantingBatches() {
                   << std::left << std::setw(10) << "Status" << std::endl;
         std::cout << "--------------------------------------------------------------------------" << std::endl;
         for (const auto& pb : plantingBatches) {
-            std::string veggieName = "Tidak Diketahui"; // Default jika ID jenis sayuran tidak valid
-            for (const auto& vt : veggieTypes) { // Cari nama sayuran berdasarkan ID
+            std::string veggieName = "Tidak Diketahui";
+            for (const auto& vt : veggieTypes) {
                 if (vt.id == pb.veggie_type_id) {
                     veggieName = vt.name;
                     break;
@@ -425,7 +415,7 @@ void viewPlantingBatches() {
     std::cout << "==========================================================================\n" << std::endl;
 }
 void updateHarvestResult() {
-    viewPlantingBatches(); // Tampilkan daftar penanaman untuk memilih ID
+    viewPlantingBatches();
     if (plantingBatches.empty()) return;
 
     int idToUpdate = getValidIntegerInput("Masukkan ID penanaman yang sudah panen: ");
@@ -449,10 +439,10 @@ void updateHarvestResult() {
 
     double quantity = getValidDoubleInput("Masukkan kuantitas hasil panen (misal: 10.5 kg): ", 0.0);
     targetBatch->harvested_quantity = quantity;
-    targetBatch->is_harvested = true; // Tandai sebagai sudah dipanen
+    targetBatch->is_harvested = true;
 
     std::cout << "[✅] Hasil panen untuk penanaman ID " << idToUpdate << " berhasil dicatat: " << quantity << " kg." << std::endl;
-    saveData(); // Simpan perubahan
+    saveData();
 }
 
 void viewHarvestedStock() {
@@ -460,10 +450,8 @@ void viewHarvestedStock() {
     std::cout << "                   STOK PANEN TERSEDIA                    " << std::endl;
     std::cout << "==========================================================" << std::endl;
 
-    // Menggunakan std::map untuk menyimpan total stok per nama sayuran
     std::map<std::string, double> currentStock; 
     
-    // Agregasi hasil panen dari semua batch yang sudah dipanen
     for (const auto& pb : plantingBatches) {
         if (pb.is_harvested) {
             std::string veggieName = "Tidak Diketahui";
@@ -477,7 +465,6 @@ void viewHarvestedStock() {
         }
     }
 
-    // Kurangi stok dengan jumlah sayuran yang sudah terjual
     for (const auto& st : salesTransactions) {
         currentStock[st.veggie_name] -= st.quantity_sold;
     }
@@ -489,7 +476,6 @@ void viewHarvestedStock() {
                   << std::left << std::setw(15) << "Stok (kg)" << std::endl;
         std::cout << "----------------------------------------------------------" << std::endl;
         for (const auto& pair : currentStock) {
-            // Hanya tampilkan sayuran yang memiliki stok positif (lebih dari mendekati nol)
             if (pair.second > 0.001) { 
                 std::cout << std::left << std::setw(30) << pair.first
                           << std::left << std::fixed << std::setprecision(2) << std::setw(15) << pair.second << std::endl;
@@ -500,11 +486,10 @@ void viewHarvestedStock() {
 }
 
 void recordSale() {
-    viewHarvestedStock(); // Tampilkan stok yang tersedia untuk referensi
+    viewHarvestedStock();
     std::cout << "\n--- Catat Penjualan Panen ---" << std::endl;
     std::string veggieName = getNonEmptyStringInput("Masukkan nama sayuran yang terjual: ");
     
-    // Cek apakah nama sayuran yang dimasukkan terdaftar sebagai jenis sayuran
     std::string lowerVeggieName = toLower(veggieName);
     bool veggieExists = false;
     for(const auto& vt : veggieTypes) {
@@ -522,7 +507,6 @@ void recordSale() {
     double quantityToSell = getValidDoubleInput("Masukkan kuantitas yang terjual (kg/ikat): ", 0.01);
     double pricePerUnit = getValidDoubleInput("Masukkan harga jual per unit/kg: ", 0.01);
 
-    // Hitung ulang stok yang tersedia untuk sayuran spesifik ini
     double availableStock = 0.0;
     for (const auto& pb : plantingBatches) {
         if (pb.is_harvested) {
@@ -538,14 +522,12 @@ void recordSale() {
             }
         }
     }
-    // Kurangi juga dengan penjualan yang sudah ada
     for (const auto& st : salesTransactions) {
         if (toLower(st.veggie_name) == lowerVeggieName) {
             availableStock -= st.quantity_sold;
         }
     }
 
-    // Validasi apakah stok cukup untuk penjualan ini
     if (quantityToSell > availableStock) {
         std::cout << "[!] Stok '" << veggieName << "' tidak cukup. Tersedia: " << std::fixed << std::setprecision(2) << availableStock << " kg." << std::endl;
         return;
@@ -553,15 +535,14 @@ void recordSale() {
 
     double totalPrice = quantityToSell * pricePerUnit;
     SaleTransaction newSale = {nextSaleTransactionId++, veggieName, getCurrentDate(), quantityToSell, pricePerUnit, totalPrice};
-    salesTransactions.push_back(newSale); // Tambahkan transaksi ke vektor
+    salesTransactions.push_back(newSale);
     
     std::cout << "\n[✅] Penjualan '" << newSale.veggie_name << "' sebanyak "
               << std::fixed << std::setprecision(2) << newSale.quantity_sold << " kg seharga Rp "
               << std::fixed << std::setprecision(2) << newSale.total_price << " berhasil dicatat." << std::endl;
-    saveData(); // Simpan perubahan
+    saveData();
 }
 
-// Menampilkan semua riwayat transaksi penjualan dalam format tabel.
 void viewSaleHistory() {
     std::cout << "\n==========================================================" << std::endl;
     std::cout << "                 RIWAYAT TRANSAKSI PENJUALAN              " << std::endl;
@@ -569,7 +550,6 @@ void viewSaleHistory() {
     if (salesTransactions.empty()) {
         std::cout << "Belum ada transaksi penjualan yang dicatat." << std::endl;
     } else {
-        // Atur lebar kolom untuk tampilan tabel
         std::cout << std::left << std::setw(5) << "ID"
                   << std::left << std::setw(15) << "Tanggal"
                   << std::left << std::setw(25) << "Sayuran"
@@ -594,17 +574,15 @@ void viewUpcomingHarvests() {
     std::cout << "                  PANEN MENDATANG                        " << std::endl;
     std::cout << "==========================================================" << std::endl;
     
-    std::string today = getCurrentDate(); // Dapatkan tanggal saat ini
+    std::string today = getCurrentDate();
 
     std::vector<PlantingBatch> upcoming;
     for (const auto& pb : plantingBatches) {
-        // Jika belum dipanen dan estimasi tanggal panennya sama atau setelah hari ini
         if (!pb.is_harvested && pb.harvest_date_est >= today) {
             upcoming.push_back(pb);
         }
     }
 
-    // Urutkan penanaman mendatang berdasarkan tanggal estimasi panen (terdekat paling atas)
     std::sort(upcoming.begin(), upcoming.end(), [](const PlantingBatch& a, const PlantingBatch& b) {
         return a.harvest_date_est < b.harvest_date_est;
     });
@@ -612,7 +590,6 @@ void viewUpcomingHarvests() {
     if (upcoming.empty()) {
         std::cout << "Tidak ada panen yang akan datang atau yang belum dipanen." << std::endl;
     } else {
-        // Tampilkan dalam format tabel
         std::cout << std::left << std::setw(5) << "ID"
                   << std::left << std::setw(20) << "Sayuran"
                   << std::left << std::setw(15) << "Tanam"
@@ -635,13 +612,11 @@ void viewUpcomingHarvests() {
     std::cout << "==========================================================\n" << std::endl;
 }
 
-// Menampilkan produk sayuran yang paling banyak terjual berdasarkan kuantitas.
 void showBestSellingProducts() {
     std::cout << "\n==========================================================" << std::endl;
     std::cout << "                   PRODUK TERLARIS (BERDASARKAN JUMLAH TERJUAL)    " << std::endl;
     std::cout << "==========================================================" << std::endl;
 
-    // Menggunakan map untuk menjumlahkan kuantitas terjual per nama sayuran
     std::map<std::string, double> soldQuantities;
     for (const auto& st : salesTransactions) {
         soldQuantities[st.veggie_name] += st.quantity_sold;
@@ -650,15 +625,12 @@ void showBestSellingProducts() {
     if (soldQuantities.empty()) {
         std::cout << "Belum ada data penjualan." << std::endl;
     } else {
-        // Konversi map ke vektor pair agar bisa diurutkan
         std::vector<std::pair<std::string, double>> sortedSales(soldQuantities.begin(), soldQuantities.end());
         
-        // Urutkan dari kuantitas terjual terbanyak ke paling sedikit
         std::sort(sortedSales.begin(), sortedSales.end(), [](const std::pair<const std::string, double>& a, const std::pair<const std::string, double>& b) {
             return a.second > b.second; 
         });
 
-        // Tampilkan dalam format tabel
         std::cout << std::left << std::setw(30) << "Nama Sayuran"
                   << std::left << std::setw(15) << "Total Terjual (kg)" << std::endl;
         std::cout << "----------------------------------------------------------" << std::endl;
@@ -705,6 +677,7 @@ void showTotalHarvestByVegetable() {
     }
     std::cout << "==========================================================\n" << std::endl;
 }
+
 void showTotalRevenue() {
     std::cout << "\n==========================================================" << std::endl;
     std::cout << "                    TOTAL PENDAPATAN PENJUALAN            " << std::endl;

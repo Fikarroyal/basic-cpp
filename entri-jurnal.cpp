@@ -1,21 +1,22 @@
-#include <iostream>   
-#include <vector>     
-#include <string>     
-#include <fstream>    
-#include <sstream>    
-#include <chrono>     
-#include <iomanip>    
+#include <iostream>
+#include <vector>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <chrono>
+#include <iomanip>
 #include <algorithm>
+#include <limits>
 
 struct JournalEntry {
-    int id;               
-    std::string title;    
-    std::string content;  
-    std::string date;     
+    int id;
+    std::string title;
+    std::string content;
+    std::string date;
 };
 
 std::vector<JournalEntry> journalEntries;
-int nextEntryId = 1;                    
+int nextEntryId = 1;
 const std::string DATA_FILE = "knowledge_journal.txt";
 
 void clearInputBuffer() {
@@ -51,7 +52,6 @@ std::string getNonEmptyStringInput(const std::string& prompt) {
     }
 }
 
-// Mendapatkan tanggal saat ini dalam format YYYY-MM-DD
 std::string getCurrentDate() {
     auto now = std::chrono::system_clock::now();
     std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
@@ -60,13 +60,10 @@ std::string getCurrentDate() {
     return ss.str();
 }
 
-// Mengonversi string ke lowercase
 std::string toLower(std::string s) {
     std::transform(s.begin(), s.end(), s.begin(), ::tolower);
     return s;
 }
-
-// --- Fungsi Penyimpanan dan Pemuatan Data (Fitur 4) ---
 
 void saveData() {
     std::ofstream outFile(DATA_FILE);
@@ -75,9 +72,8 @@ void saveData() {
         return;
     }
 
-    outFile << nextEntryId << "\n"; // Simpan nextEntryId di baris pertama
+    outFile << nextEntryId << "\n";
     for (const auto& entry : journalEntries) {
-        // Gunakan delimiter yang tidak mungkin ada dalam teks biasa, misal "|||"
         outFile << entry.id << "|||"
                 << entry.title << "|||"
                 << entry.content << "|||"
@@ -91,12 +87,11 @@ void loadData() {
     std::ifstream inFile(DATA_FILE);
     if (!inFile.is_open()) {
         std::cout << "[INFO] File data jurnal tidak ditemukan. Membuat data baru." << std::endl;
-        nextEntryId = 1; // Pastikan ID dimulai dari 1
+        nextEntryId = 1;
         return;
     }
 
     std::string line;
-    // Baca nextEntryId dari baris pertama
     if (std::getline(inFile, line)) {
         try {
             nextEntryId = std::stoi(line);
@@ -105,29 +100,27 @@ void loadData() {
             nextEntryId = 1;
         }
     } else {
-        // Jika file kosong, atur nextEntryId dan keluar
         inFile.close();
         nextEntryId = 1;
         return;
     }
 
-    journalEntries.clear(); // Bersihkan data sebelumnya
+    journalEntries.clear();
     while (std::getline(inFile, line)) {
         std::stringstream ss(line);
         std::string segment;
         std::vector<std::string> segments;
 
-        // Pisahkan segmen berdasarkan delimiter "|||"
         size_t pos = 0;
         std::string token;
         while ((pos = line.find("|||")) != std::string::npos) {
             token = line.substr(0, pos);
             segments.push_back(token);
-            line.erase(0, pos + 3); // Hapus token dan delimiter
+            line.erase(0, pos + 3);
         }
-        segments.push_back(line); // Segmen terakhir
+        segments.push_back(line);
 
-        if (segments.size() == 4) { // Pastikan jumlah segmen sesuai
+        if (segments.size() == 4) {
             JournalEntry entry;
             try {
                 entry.id = std::stoi(segments[0]);
@@ -135,7 +128,7 @@ void loadData() {
                 entry.content = segments[2];
                 entry.date = segments[3];
                 journalEntries.push_back(entry);
-                if (entry.id >= nextEntryId) { // Pastikan nextEntryId selalu lebih besar dari ID yang sudah ada
+                if (entry.id >= nextEntryId) {
                     nextEntryId = entry.id + 1;
                 }
             } catch (const std::exception& e) {
@@ -149,17 +142,14 @@ void loadData() {
     std::cout << "[INFO] Data jurnal berhasil dimuat. Total entri: " << journalEntries.size() << std::endl;
 }
 
-// --- Fungsi Manajemen Entri Jurnal (Fitur 1) ---
-
-// Menambah entri baru (Fitur 1.1)
 void addEntry() {
     std::cout << "\n==========================================================" << std::endl;
-    std::cout << "                   TAMBAH ENTRI BARU                      " << std::endl;
+    std::cout << "                   TAMBAH ENTRI BARU                     " << std::endl;
     std::cout << "==========================================================" << std::endl;
 
     JournalEntry newEntry;
-    newEntry.id = nextEntryId++; // Otomatis increment ID
-    newEntry.date = getCurrentDate(); // Otomatis tanggal saat ini (Fitur 5)
+    newEntry.id = nextEntryId++;
+    newEntry.date = getCurrentDate();
 
     std::cout << "Tanggal: " << newEntry.date << std::endl;
     newEntry.title = getNonEmptyStringInput("Masukkan judul entri: ");
@@ -169,7 +159,6 @@ void addEntry() {
     while (std::getline(std::cin, line) && line != "END") {
         newEntry.content += line + "\n";
     }
-    // Hapus newline terakhir jika ada
     if (!newEntry.content.empty() && newEntry.content.back() == '\n') {
         newEntry.content.pop_back();
     }
@@ -179,10 +168,9 @@ void addEntry() {
     saveData();
 }
 
-// Menampilkan semua entri (Fitur 1.2)
 void viewAllEntries() {
     std::cout << "\n==========================================================" << std::endl;
-    std::cout << "                     SEMUA ENTRI JURNAL                   " << std::endl;
+    std::cout << "                     SEMUA ENTRI JURNAL                     " << std::endl;
     std::cout << "==========================================================" << std::endl;
 
     if (journalEntries.empty()) {
@@ -201,9 +189,8 @@ void viewAllEntries() {
     std::cout << "==========================================================\n" << std::endl;
 }
 
-// Menampilkan detail entri (Fitur 1.3)
 void viewEntryDetails() {
-    viewAllEntries(); // Tampilkan daftar ID
+    viewAllEntries();
     if (journalEntries.empty()) return;
 
     int idToView = getValidIntegerInput("Masukkan ID entri yang ingin dilihat detailnya: ");
@@ -212,7 +199,7 @@ void viewEntryDetails() {
     for (const auto& entry : journalEntries) {
         if (entry.id == idToView) {
             std::cout << "\n==========================================================" << std::endl;
-            std::cout << "                  DETAIL ENTRI ID: " << entry.id << std::endl;
+            std::cout << "                 DETAIL ENTRI ID: " << entry.id << std::endl;
             std::cout << "==========================================================" << std::endl;
             std::cout << "Judul   : " << entry.title << std::endl;
             std::cout << "Tanggal : " << entry.date << std::endl;
@@ -228,18 +215,17 @@ void viewEntryDetails() {
     }
 }
 
-// Mengedit entri (Fitur 1.4)
 void editEntry() {
-    viewAllEntries(); // Tampilkan daftar ID
+    viewAllEntries();
     if (journalEntries.empty()) return;
 
     int idToEdit = getValidIntegerInput("Masukkan ID entri yang ingin diedit: ");
 
     bool found = false;
-    for (auto& entry : journalEntries) { // Gunakan auto& untuk bisa memodifikasi
+    for (auto& entry : journalEntries) {
         if (entry.id == idToEdit) {
             std::cout << "\n==========================================================" << std::endl;
-            std::cout << "                   EDIT ENTRI ID: " << entry.id << std::endl;
+            std::cout << "                     EDIT ENTRI ID: " << entry.id << std::endl;
             std::cout << "==========================================================" << std::endl;
             std::cout << "Judul saat ini: " << entry.title << std::endl;
             std::string newTitle = getNonEmptyStringInput("Masukkan judul baru (biarkan kosong untuk tidak mengubah): ");
@@ -275,14 +261,12 @@ void editEntry() {
     }
 }
 
-// Menghapus entri (Fitur 1.5)
 void deleteEntry() {
-    viewAllEntries(); // Tampilkan daftar ID
+    viewAllEntries();
     if (journalEntries.empty()) return;
 
     int idToDelete = getValidIntegerInput("Masukkan ID entri yang ingin dihapus: ");
 
-    // Cari dan hapus entri berdasarkan ID
     auto it = std::remove_if(journalEntries.begin(), journalEntries.end(),
                              [idToDelete](const JournalEntry& entry) {
                                  return entry.id == idToDelete;
@@ -297,9 +281,6 @@ void deleteEntry() {
     }
 }
 
-// --- Fungsi Pencarian & Filter (Fitur 2) ---
-
-// Mencari berdasarkan judul (Fitur 2.1)
 void searchByTitle() {
     if (journalEntries.empty()) {
         std::cout << "Jurnal kosong. Tidak ada yang bisa dicari." << std::endl;
@@ -335,7 +316,6 @@ void searchByTitle() {
     std::cout << "==========================================================\n" << std::endl;
 }
 
-// Mencari berdasarkan isi (Fitur 2.2)
 void searchByContent() {
     if (journalEntries.empty()) {
         std::cout << "Jurnal kosong. Tidak ada yang bisa dicari." << std::endl;
@@ -371,7 +351,6 @@ void searchByContent() {
     std::cout << "==========================================================\n" << std::endl;
 }
 
-// Filter berdasarkan tanggal (Fitur 2.3)
 void filterByDate() {
     if (journalEntries.empty()) {
         std::cout << "Jurnal kosong. Tidak ada yang bisa difilter." << std::endl;
@@ -387,7 +366,7 @@ void filterByDate() {
     }
 
     std::cout << "\n==========================================================" << std::endl;
-    std::cout << "                   HASIL FILTER TANGGAL                   " << std::endl;
+    std::cout << "                   HASIL FILTER TANGGAL                     " << std::endl;
     std::cout << "                   Tanggal: " << dateToFilter << std::endl;
     std::cout << "==========================================================" << std::endl;
     if (results.empty()) {
@@ -406,9 +385,6 @@ void filterByDate() {
     std::cout << "==========================================================\n" << std::endl;
 }
 
-// --- Fungsi Statistik & Ringkasan Belajar (Fitur 3) ---
-
-// Menampilkan total entri (Fitur 3.1)
 void showTotalEntries() {
     std::cout << "\n==========================================================" << std::endl;
     std::cout << "                     STATISTIK JURNAL                     " << std::endl;
@@ -417,13 +393,12 @@ void showTotalEntries() {
     std::cout << "==========================================================\n" << std::endl;
 }
 
-// Menampilkan entri harian (Fitur 3.2)
 void showDailySummary() {
     std::string date = getNonEmptyStringInput("Masukkan tanggal (YYYY-MM-DD) untuk ringkasan harian: ");
     
     int count = 0;
     std::cout << "\n==========================================================" << std::endl;
-    std::cout << "               RINGKASAN ENTRI TANGGAL: " << date << std::endl;
+    std::cout << "            RINGKASAN ENTRI TANGGAL: " << date << std::endl;
     std::cout << "==========================================================" << std::endl;
     
     for (const auto& entry : journalEntries) {
@@ -442,16 +417,14 @@ void showDailySummary() {
 }
 
 
-// --- Main Program Loop ---
-
 int main() {
-    loadData(); // Muat data saat program dimulai
+    loadData();
 
     int choice;
     do {
         std::cout << "\n==========================================================" << std::endl;
-        std::cout << "              JURNAL BELAJAR & PENGETAHUAN                " << std::endl;
-        std::cout << "              Hari Ini: " << getCurrentDate() << std::endl;
+        std::cout << "               JURNAL BELAJAR & PENGETAHUAN               " << std::endl;
+        std::cout << "               Hari Ini: " << getCurrentDate() << std::endl;
         std::cout << "==========================================================" << std::endl;
         std::cout << "1.  Tambah Entri Baru" << std::endl;
         std::cout << "2.  Lihat Semua Entri" << std::endl;
@@ -479,8 +452,8 @@ int main() {
             case 8: filterByDate(); break;
             case 9: showTotalEntries(); break;
             case 10: showDailySummary(); break;
-            case 11: 
-                saveData(); // Simpan data sebelum keluar
+            case 11:
+                saveData();
                 std::cout << "\nTerima kasih telah menggunakan Jurnal Belajar & Pengetahuan! Sampai jumpa lagi." << std::endl;
                 break;
             default: std::cout << "Pilihan tidak valid. Silakan coba lagi." << std::endl; break;
@@ -488,7 +461,7 @@ int main() {
     } while (choice != 11);
 
     std::cout << "Tekan Enter untuk keluar...";
-    std::cin.get(); // Menunggu user menekan enter sebelum menutup konsol
+    std::cin.get();
 
     return 0;
 }

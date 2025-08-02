@@ -1,25 +1,19 @@
-#include <iostream>   // Untuk input/output dasar (cout, cin)
-#include <string>     // Untuk std::string
-#include <iomanip>    // Untuk manipulasi output (setw, left, right)
-#include <limits>     // Untuk std::numeric_limits (untuk clear buffer)
-#include <cstdlib>    // Untuk rand(), srand()
-#include <ctime>      // Untuk time()
+#include <iostream>   
+#include <string>     
+#include <iomanip>    
+#include <limits>     
+#include <cstdlib>    
+#include <ctime>   
 
-// --- Konfigurasi Tampilan ---
-const int TOTAL_WIDTH = 70; // Lebar total tampilan konsol
-
-// Fungsi untuk mencetak garis pemisah
+const int TOTAL_WIDTH = 70;
 void printSeparator(char c = '=', int length = TOTAL_WIDTH) {
     std::cout << std::string(length, c) << std::endl;
 }
-
-// Fungsi untuk mencetak teks di tengah
 void printCenteredText(const std::string& text) {
     int padding = (TOTAL_WIDTH - text.length()) / 2;
     std::cout << std::string(padding, ' ') << text << std::string(padding, ' ') << std::endl;
 }
 
-// Fungsi untuk mendapatkan input integer dari pengguna
 int getInputInt(const std::string& prompt) {
     int value;
     while (true) {
@@ -27,24 +21,21 @@ int getInputInt(const std::string& prompt) {
         std::cin >> value;
         if (std::cin.fail()) {
             std::cout << "Input tidak valid. Harap masukkan angka.\n";
-            std::cin.clear(); // Hapus flag error
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Buang sisa input
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         } else {
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Buang sisa newline
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             return value;
         }
     }
 }
 
-// --- Fungsi Game ---
-
 void playGuessingGame() {
-    // Inisialisasi generator angka acak
     srand(static_cast<unsigned int>(time(0))); 
 
     int minNum = 1;
     int maxNum = 100;
-    int targetNumber = rand() % (maxNum - minNum + 1) + minNum; // Angka acak antara minNum dan maxNum
+    int targetNumber = rand() % (maxNum - minNum + 1) + minNum;
     int guess;
     int attempts = 0;
     bool hasGuessedCorrectly = false;
@@ -75,14 +66,12 @@ void playGuessingGame() {
             std::cout << std::endl;
             printSeparator('*');
         }
-        std::cout << std::endl; // Spasi antar tebakan
+        std::cout << std::endl;
     }
 }
 
 int main() {
     char playAgain;
-
-    // Header utama game
     printSeparator('=');
     printCenteredText("-------------------------");
     printCenteredText("  GAME TEBAK-TEBAK ANGKA   ");
@@ -95,10 +84,9 @@ int main() {
 
         std::cout << "Apakah Anda ingin bermain lagi? (Y/T): ";
         std::cin >> playAgain;
-        // Mengkonversi ke huruf besar untuk memudahkan perbandingan
         playAgain = toupper(playAgain); 
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Buang sisa newline
-        std::cout << std::endl; // Spasi sebelum mulai game baru atau keluar
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << std::endl;
         
     } while (playAgain == 'Y');
 
@@ -106,7 +94,7 @@ int main() {
     printCenteredText("Terima kasih sudah bermain!");
     printSeparator();
     std::cout << "\nProgram selesai. Tekan Enter untuk keluar.";
-    std::cin.get(); // Menunggu Enter terakhir sebelum menutup konsol
+    std::cin.get();
     
     return 0;
 }
